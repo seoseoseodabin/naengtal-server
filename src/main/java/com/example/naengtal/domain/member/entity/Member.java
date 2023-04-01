@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 public class Member {
+
     @Id
     @Column(name = "id", nullable = false)
     String id;
