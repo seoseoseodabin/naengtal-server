@@ -1,14 +1,12 @@
 package com.example.naengtal.domain.member.entity;
 
+import com.example.naengtal.domain.fridge.entity.Fridge;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "member")
@@ -16,6 +14,7 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 public class Member {
+
     @Id
     @Column(name = "id", nullable = false)
     String id;
@@ -26,10 +25,15 @@ public class Member {
     @Column(name = "password", nullable = false)
     String password;
 
+    @ManyToOne
+    @JoinColumn(name = "fridge_id", nullable = false)
+    Fridge fridge;
+
     @Builder
-    public Member(String id, String name, String password) {
+    public Member(String id, String name, String password, Fridge fridge) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.fridge = fridge;
     }
 }
