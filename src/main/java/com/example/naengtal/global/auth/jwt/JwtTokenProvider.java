@@ -59,7 +59,7 @@ public class JwtTokenProvider {
             parseClaims(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.error("Invalid JWT token");
+            log.error("Invalid JWT Token");
         } catch (ExpiredJwtException e) {
             log.error("expired token");
         } catch (UnsupportedJwtException e) {
@@ -74,19 +74,8 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
         List<GrantedAuthority> authorities = parseAuthorities(claims);
 
-        validateAuthority(authorities);
-
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
-    }
-
-    private void validateAuthority(List<GrantedAuthority> authorities) {
-        for (GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals("ROLE_USER")) {
-                return;
-            }
-        }
-        throw new RuntimeException("Invalid Authority");
     }
 
     private Claims parseClaims(String token) {
@@ -98,8 +87,16 @@ public class JwtTokenProvider {
     }
 
     private List<GrantedAuthority> parseAuthorities(Claims claims) {
-        return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(""))
+        validateAuthorities(claims);
+
+        return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+    }
+
+    private void validateAuthorities(Claims claims) {
+        if (claims.get(AUTHORITIES_KEY) == null) {
+            throw new RuntimeException("NO AUTHORITIES");
+        }
     }
 }

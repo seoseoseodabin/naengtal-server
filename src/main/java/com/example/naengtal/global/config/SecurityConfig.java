@@ -30,6 +30,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .antMatchers("/account/signup").permitAll() // 모든 요청 허가
                 .antMatchers("/auth/signin").permitAll()
+                .anyRequest().hasRole("USER")
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
