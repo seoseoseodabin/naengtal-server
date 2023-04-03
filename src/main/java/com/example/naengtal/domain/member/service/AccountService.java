@@ -3,13 +3,17 @@ package com.example.naengtal.domain.member.service;
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.repository.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
-import com.example.naengtal.domain.member.dto.SignUpDto;
+import com.example.naengtal.domain.member.dto.SignUpRequestDto;
 import com.example.naengtal.domain.member.entity.Member;
+import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import static com.example.naengtal.domain.member.exception.MemberErrorCode.UNAVAILABLE_ID;
+import static com.example.naengtal.domain.member.exception.MemberErrorCode.WRONG_CONFIRM_PASSWORD;
 
 @Service
 @Transactional
@@ -22,15 +26,15 @@ public class AccountService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public void saveMember(SignUpDto signUpDto) {
+    public void saveMember(SignUpRequestDto signUpRequestDto) {
         // id 중복 검사
-        memberRepository.findById(signUpDto.getId()).ifPresent(a ->
-            System.out.println("id already exist")
-        );
+        memberRepository.findById(signUpRequestDto.getId()).ifPresent(a -> {
+            throw new RestApiException(UNAVAILABLE_ID);
+        });
 
         // 비밀번호와 비밀번호 확인 일치하는지 검사
-        if (!signUpDto.getPassword().equals(signUpDto.getConfirmPassword()))
-            System.out.println("wrong confirm password");
+        if (!signUpRequestDto.getPassword().equals(signUpRequestDto.getConfirmPassword()))
+            throw new RestApiException(WRONG_CONFIRM_PASSWORD);
 
         // 냉장고 생성
         Fridge fridge = new Fridge();
@@ -38,9 +42,9 @@ public class AccountService {
 
         // 디비에 저장장
         memberRepository.save(Member.builder()
-                .id(signUpDto.getId())
-                .name(signUpDto.getName())
-                .password(passwordEncoder.encode(signUpDto.getPassword()))
+                .id(signUpRequestDto.getId())
+                .name(signUpRequestDto.getName())
+                .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
                 .fridge(fridge)
                 .build());
     }
