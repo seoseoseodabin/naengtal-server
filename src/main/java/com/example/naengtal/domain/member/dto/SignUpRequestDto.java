@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-public class SignUpDto {
+public class SignUpRequestDto {
 
     @NotBlank(message = "NAME_IS_MANDATORY")
     @Size(min = 1, max = 10)
