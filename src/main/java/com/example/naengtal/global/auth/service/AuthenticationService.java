@@ -3,11 +3,15 @@ package com.example.naengtal.global.auth.service;
 import com.example.naengtal.global.auth.dto.TokenDto;
 import com.example.naengtal.global.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional(readOnly = true)
@@ -16,6 +20,7 @@ public class AuthenticationService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public TokenDto signIn(String id, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
@@ -33,5 +38,13 @@ public class AuthenticationService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public void signOut(String accessToken) {
+        redisTemplate.opsForValue()
+                .set(accessToken,
+                        "signOut",
+                        jwtTokenProvider.getExpiration(accessToken) - (new Date()).getTime(),
+                        TimeUnit.MILLISECONDS);
     }
 }

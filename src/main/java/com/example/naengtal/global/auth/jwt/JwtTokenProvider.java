@@ -78,6 +78,11 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+    public long getExpiration(String token) {
+        return parseClaims(token).getExpiration()
+                .getTime();
+    }
+
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
