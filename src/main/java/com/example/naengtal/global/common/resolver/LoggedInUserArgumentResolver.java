@@ -36,9 +36,7 @@ public class LoggedInUserArgumentResolver implements HandlerMethodArgumentResolv
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) throws Exception {
 
-        String id = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        return memberRepository.findById(id)
+        return memberRepository.findById(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new RestApiException(MEMBER_NOT_FOUND));
     }
 }
