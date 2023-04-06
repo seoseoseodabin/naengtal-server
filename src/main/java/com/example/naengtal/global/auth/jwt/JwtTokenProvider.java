@@ -30,7 +30,7 @@ public class JwtTokenProvider {
     private String secretKey;
     @Value("${jwt.validate-in-seconds}")
     private long accessTokenValidateTime;
-    private static final String AUTHORITIES_KEY = "auth";
+    public static final String AUTHORITIES_KEY = "auth";
     private Key key;
 
     @PostConstruct
