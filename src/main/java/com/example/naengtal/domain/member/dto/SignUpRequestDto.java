@@ -12,15 +12,15 @@ public class SignUpRequestDto {
 
     @NotBlank(message = "NAME_IS_MANDATORY")
     @Size(min = 1, max = 10)
-    String name;
+    private String name;
 
     @NotBlank(message = "ID_IS_MANDATORY")
     @Size(min = 1, max = 15)
-    String id;
+    private String id;
 
     @NotBlank(message = "PASSWORD_IS_MANDATORY")
-    String password;
+    private String password;
 
     @NotBlank(message = "CONFIRM_PASSWORD_IS_MANDATORY")
-    String confirmPassword;
+    private String confirmPassword;
 }

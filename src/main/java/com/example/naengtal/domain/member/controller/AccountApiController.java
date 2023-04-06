@@ -1,6 +1,7 @@
 package com.example.naengtal.domain.member.controller;
 
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
+import com.example.naengtal.domain.member.dto.SignUpResponseDto;
 import com.example.naengtal.domain.member.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class AccountApiController {
     private final AccountService accountService;
 
     @PostMapping("signup")
-    public ResponseEntity<String> signUp(@Validated @RequestBody SignUpRequestDto signUpRequestDto) {
-        accountService.saveMember(signUpRequestDto);
+    public ResponseEntity<SignUpResponseDto> signUp(@Validated @RequestBody SignUpRequestDto signUpRequestDto) {
+        SignUpResponseDto dto = accountService.saveMember(signUpRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body("success");
+                .body(dto);
     }
 }

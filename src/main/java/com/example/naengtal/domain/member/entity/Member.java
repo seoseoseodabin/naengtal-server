@@ -17,17 +17,17 @@ public class Member {
 
     @Id
     @Column(name = "id", nullable = false)
-    String id;
+    private String id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "password", nullable = false)
-    String password;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "fridge_id", nullable = false)
-    Fridge fridge;
+    private Fridge fridge;
 
     @Builder
     public Member(String id, String name, String password, Fridge fridge) {
