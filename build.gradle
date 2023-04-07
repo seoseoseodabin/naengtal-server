@@ -49,3 +49,9 @@ tasks.named('test') {
 jar {
     enabled = false
 }
+
+bootJar{
+    archivesBaseName = 'naengtal-server'
+    archiveFileName = 'project-naengtal.jar'
+    archiveVersion = "0.0.1"
+}
