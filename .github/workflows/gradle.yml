@@ -56,7 +56,7 @@ jobs:
       
     # S3 버킷에 업로드 할 파일 복사
     - name: Copy files
-      run: cp ./scripts/*sh ./build/libs/*.jar appspec.yml ./deploy
+      run: cp -r ./scripts ./build/libs/*.jar appspec.yml ./deploy/
 
     # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
     - name: Configure AWS credentials
