@@ -49,6 +49,14 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: clean build -x test
+        
+    # 디렉토리 생성
+    - name: Make Directory
+      run: mkdir ./deploy
+      
+    # S3 버킷에 업로드 할 파일 복사
+    - name: Copy files
+      run: cp ./scripts/*sh ./build/libs/*.jar appspec.yml ./deploy
 
     # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
     - name: Configure AWS credentials
@@ -65,7 +73,7 @@ jobs:
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --ignore-hidden-files \
           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
-          --source .
+          --source ./deploy
       
     # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
     - name: Deploy to AWS EC2 from S3
