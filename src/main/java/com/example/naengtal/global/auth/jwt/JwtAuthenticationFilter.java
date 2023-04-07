@@ -1,6 +1,8 @@
 package com.example.naengtal.global.auth.jwt;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -14,10 +16,10 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
 
     // JWT 토큰의 인증 정보(Authentication 객체)를 SecurityContext 에 저장
     @Override
@@ -25,7 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token)
-                && jwtTokenProvider.validateToken(token)) {
+                && jwtTokenProvider.validateToken(token)
+                && redisTemplate.opsForValue().get(token) == null) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -33,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+        String token = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if (token != null && token.startsWith(BEARER_PREFIX)) {
             return token.substring(BEARER_PREFIX.length());
         }

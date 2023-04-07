@@ -4,13 +4,13 @@ import com.example.naengtal.global.auth.dto.SignInRequestDto;
 import com.example.naengtal.global.auth.dto.TokenDto;
 import com.example.naengtal.global.auth.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.example.naengtal.global.auth.jwt.JwtAuthenticationFilter.BEARER_PREFIX;
 
 
 @RestController
@@ -25,5 +25,12 @@ public class AuthenticationApiController {
         TokenDto tokenDto = authenticationService.signIn(signInRequestDto.getId(), signInRequestDto.getPassword());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tokenDto);
+    }
+
+    @PostMapping("signout")
+    private ResponseEntity<String> signOut(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("signout success!");
     }
 }
