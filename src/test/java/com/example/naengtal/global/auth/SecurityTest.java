@@ -1,4 +1,4 @@
-package com.example.naengtal.AuthenticationApiControllerTest;
+package com.example.naengtal.global.auth;
 
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
