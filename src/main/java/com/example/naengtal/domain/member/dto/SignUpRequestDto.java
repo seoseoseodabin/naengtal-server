@@ -1,15 +1,13 @@
 package com.example.naengtal.domain.member.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class SignUpRequestDto {
 
     @NotBlank(message = "NAME_IS_MANDATORY")
