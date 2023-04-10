@@ -4,6 +4,7 @@ import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.repository.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
+import com.example.naengtal.domain.member.dto.SignUpResponseDto;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AccountService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public void saveMember(SignUpRequestDto signUpRequestDto) {
+    public SignUpResponseDto saveMember(SignUpRequestDto signUpRequestDto) {
         // id 중복 검사
         memberRepository.findById(signUpRequestDto.getId()).ifPresent(a -> {
             throw new RestApiException(UNAVAILABLE_ID);
@@ -40,12 +41,18 @@ public class AccountService {
         Fridge fridge = new Fridge();
         fridge = fridgeRepository.save(fridge);
 
-        // 디비에 저장장
-        memberRepository.save(Member.builder()
+        // 디비에 저장
+        Member member = memberRepository.save(Member.builder()
                 .id(signUpRequestDto.getId())
                 .name(signUpRequestDto.getName())
                 .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
                 .fridge(fridge)
                 .build());
+
+        return SignUpResponseDto.builder()
+                .name(member.getName())
+                .id(member.getId())
+                .fridgeId(fridge.getId())
+                .build();
     }
 }
