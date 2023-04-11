@@ -58,6 +58,9 @@ public class AccountService {
 
     public void deleteMember(Member member) {
         // 냉장고, 냉장고 공유 구현 후 냉장고 삭제 로직 추가해야 함
+        // 외래키 제약 조건 때문에 member 먼저 삭제 후 fridge 삭제해야 함
+        int fridgeId = member.getFridge().getId();
         memberRepository.delete(member);
+        fridgeRepository.deleteById(fridgeId);
     }
 }
