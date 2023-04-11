@@ -55,4 +55,9 @@ public class AccountService {
                 .fridgeId(fridge.getId())
                 .build();
     }
+
+    public void deleteMember(Member member) {
+        // 냉장고, 냉장고 공유 구현 후 냉장고 삭제 로직 추가해야 함
+        memberRepository.delete(member);
+    }
 }
