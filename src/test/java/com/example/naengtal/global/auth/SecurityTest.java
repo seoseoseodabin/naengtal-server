@@ -62,7 +62,6 @@ public class SecurityTest {
                 .confirmPassword("test1234")
                 .build();
 
-
         accountService.saveMember(signUpRequestDto);
     }
 
