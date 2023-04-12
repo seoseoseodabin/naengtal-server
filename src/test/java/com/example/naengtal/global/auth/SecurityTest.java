@@ -55,11 +55,12 @@ public class SecurityTest {
     @BeforeEach
     void beforeEach() {
         // 회원 가입
-        SignUpRequestDto signUpRequestDto = new SignUpRequestDto();
-        signUpRequestDto.setId("test");
-        signUpRequestDto.setPassword("test1234");
-        signUpRequestDto.setConfirmPassword("test1234");
-        signUpRequestDto.setName("test");
+        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+                .name("test")
+                .id("test")
+                .password("test1234")
+                .confirmPassword("test1234")
+                .build();
 
         accountService.saveMember(signUpRequestDto);
     }
