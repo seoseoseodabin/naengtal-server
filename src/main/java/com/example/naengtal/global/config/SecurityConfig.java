@@ -22,6 +22,12 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+    private static final String[] SWAGGER_LIST = {
+            // swagger 접근 허용
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -32,6 +38,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .antMatchers("/account/signup").permitAll() // 모든 요청 허가
                 .antMatchers("/auth/signin").permitAll()
+                .antMatchers(SWAGGER_LIST).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),
