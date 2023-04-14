@@ -3,6 +3,7 @@ package com.example.naengtal.global.auth.controller;
 import com.example.naengtal.global.auth.dto.SignInRequestDto;
 import com.example.naengtal.global.auth.dto.TokenDto;
 import com.example.naengtal.global.auth.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class AuthenticationApiController {
     }
 
     @PostMapping("signout")
-    private ResponseEntity<String> signOut(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+    private ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()));
         return ResponseEntity.status(HttpStatus.OK)
                 .body("signout success!");
