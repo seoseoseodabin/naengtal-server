@@ -24,4 +24,14 @@ public class MemberSearchService {
                 .map(member -> new MemberResponseDto(member.getName(), member.getId(), inviter.getFridge().equals(member.getFridge())))
                 .collect(Collectors.toList());
     }
+
+    public List<MemberResponseDto> searchSharedMembers(Member member) {
+        List<Member> memberList = member.getFridge().getSharedMembers();
+
+        memberList.remove(member);
+
+        return memberList.stream()
+                .map(sharedMember -> new MemberResponseDto(sharedMember.getName(), sharedMember.getId(), true))
+                .collect(Collectors.toList());
+    }
 }

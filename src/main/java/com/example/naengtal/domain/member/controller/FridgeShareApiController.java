@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class FridgeShareController {
+public class FridgeShareApiController {
 
     private final MemberSearchService memberSearchService;
 
@@ -29,6 +29,12 @@ public class FridgeShareController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(memberSearchService.search(inviter, nameOrId));
 
+    }
+
+    @GetMapping("get/sharedmembers")
+    public ResponseEntity<List<MemberResponseDto>> getSharedMembers(@Parameter(hidden = true) @LoggedInUser Member member) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(memberSearchService.searchSharedMembers(member));
     }
 
     @GetMapping("invite/{member_id}")
