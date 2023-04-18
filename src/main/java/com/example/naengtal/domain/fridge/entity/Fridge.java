@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,5 +24,5 @@ public class Fridge {
     private int id;
 
     @OneToMany(mappedBy = "fridge")
-    private List<Member> sharedMembers;
+    private List<Member> sharedMembers = new ArrayList<>();
 }

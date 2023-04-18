@@ -11,12 +11,15 @@ import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.ALARM_NOT_FOUND;
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.NOT_OWN_ALARM;
 import static com.example.naengtal.domain.member.exception.MemberErrorCode.CANNOT_INVITE_SELF;
 import static com.example.naengtal.domain.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberInvitationService {
 
