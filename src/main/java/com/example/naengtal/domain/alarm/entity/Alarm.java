@@ -1,9 +1,7 @@
 package com.example.naengtal.domain.alarm.entity;
 
 import com.example.naengtal.domain.member.entity.Member;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,6 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Alarm {
 
@@ -31,10 +31,14 @@ public class Alarm {
     private AlarmType type;
 
     @CreatedDate
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "id")
     private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "inviter_id")
+    private Member inviter;
 }
