@@ -39,4 +39,13 @@ public class FridgeShareController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body("success");
     }
+
+    @GetMapping("accept/{alarm_id}")
+    public ResponseEntity<String> accept(@Parameter(hidden = true) @LoggedInUser Member invitee,
+                                         @PathVariable("alarm_id") int alarmId) {
+        memberInvitationService.accept(invitee, alarmId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("success");
+    }
 }
