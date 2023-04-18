@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Alarm {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "alarm_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
