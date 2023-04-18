@@ -20,8 +20,8 @@ public class Fridge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fridge_id", nullable = false)
-    int id;
+    private int id;
 
     @OneToMany(mappedBy = "fridge")
-    List<Member> sharedMembers;
+    private List<Member> sharedMembers;
 }
