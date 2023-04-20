@@ -60,7 +60,7 @@ public class MemberInvitationService {
 
         fcmService.sendByTokenList(tokenList, FcmInvitationDto.builder()
                 .title("냉장고 공유 초대 요청")
-                .body(inviter.getName() + " 님으로부터 냉장고 초대 요청을 보냈습니다.")
+                .body(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
                 .type(FcmType.INVITATION)
                 .build());
     }

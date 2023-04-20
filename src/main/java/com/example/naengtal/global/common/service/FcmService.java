@@ -39,7 +39,7 @@ public class FcmService {
     }
 
     public void sendByTokenList(List<String> tokenList, FcmInvitationDto dto) {
-        MulticastMessage multicastMessage = makeMessages(tokenList, dto);
+        MulticastMessage multicastMessage = makeMulticastMessage(tokenList, dto);
 
         try {
             BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
@@ -60,7 +60,7 @@ public class FcmService {
 
     }
 
-    public MulticastMessage makeMessages(List<String> tokenList, FcmInvitationDto dto) {
+    public MulticastMessage makeMulticastMessage(List<String> tokenList, FcmInvitationDto dto) {
         return MulticastMessage.builder()
                 .addAllTokens(tokenList)
                 .setNotification(
