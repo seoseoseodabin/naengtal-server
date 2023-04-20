@@ -20,8 +20,7 @@ import java.util.List;
 
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.ALARM_NOT_FOUND;
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.NOT_OWN_ALARM;
-import static com.example.naengtal.domain.member.exception.MemberErrorCode.CANNOT_INVITE_SELF;
-import static com.example.naengtal.domain.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.example.naengtal.domain.member.exception.MemberErrorCode.*;
 
 @Service
 @Transactional
@@ -44,6 +43,9 @@ public class MemberInvitationService {
 
         if (inviter.getId().equals(inviteeId))
             throw new RestApiException(CANNOT_INVITE_SELF);
+
+        if (inviter.getFridge() == invitee.getFridge())
+            throw new RestApiException(ALREADY_SHARING);
 
         // DB에 알림 저장
         Alarm alarm = Alarm.builder()
