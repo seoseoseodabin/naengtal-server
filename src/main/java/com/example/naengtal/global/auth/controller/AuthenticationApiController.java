@@ -1,8 +1,10 @@
 package com.example.naengtal.global.auth.controller;
 
+import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.auth.dto.SignInRequestDto;
 import com.example.naengtal.global.auth.dto.TokenDto;
 import com.example.naengtal.global.auth.service.AuthenticationService;
+import com.example.naengtal.global.common.annotation.LoggedInUser;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -23,14 +25,17 @@ public class AuthenticationApiController {
 
     @PostMapping("signin")
     private ResponseEntity<TokenDto> signIn(@Validated @RequestBody SignInRequestDto signInRequestDto) {
-        TokenDto tokenDto = authenticationService.signIn(signInRequestDto.getId(), signInRequestDto.getPassword());
+        TokenDto tokenDto = authenticationService.signIn(
+                signInRequestDto.getId(), signInRequestDto.getPassword(), signInRequestDto.getFcmToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tokenDto);
     }
 
-    @PostMapping("signout")
-    private ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()));
+    @PostMapping("signout/{fcm_token}")
+    private ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                           @Parameter(hidden = true) @LoggedInUser Member member,
+                                           @PathVariable("fcm_token") String fcmToken) {
+        authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()), member.getId(), fcmToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .body("signout success!");
     }
