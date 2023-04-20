@@ -25,4 +25,6 @@ public class Fridge {
 
     @OneToMany(mappedBy = "fridge")
     private List<Member> sharedMembers = new ArrayList<>();
+
+    public Fridge(int id) { this.id = id; }
 }
