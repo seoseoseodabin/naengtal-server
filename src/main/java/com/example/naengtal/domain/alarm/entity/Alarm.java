@@ -26,10 +26,6 @@ public class Alarm {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private AlarmType type;
-
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
