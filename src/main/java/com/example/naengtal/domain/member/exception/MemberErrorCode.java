@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum MemberErrorCode implements ErrorCode {
 
-    UNAVAILABLE_ID(HttpStatus.BAD_REQUEST, "Unavailable id"),
-    WRONG_CONFIRM_PASSWORD(HttpStatus.BAD_REQUEST, "Wrong confirm password"),
+    UNAVAILABLE_ID(HttpStatus.BAD_REQUEST, "unavailable id"),
+    WRONG_CONFIRM_PASSWORD(HttpStatus.BAD_REQUEST, "wrong confirm password"),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "member not found"),
+    CANNOT_INVITE_SELF(HttpStatus.BAD_REQUEST, "cannot invite self"),
+    ALREADY_SHARING(HttpStatus.BAD_REQUEST, "already sharing"),
     ;
 
     private HttpStatus httpStatus;

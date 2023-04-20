@@ -21,6 +21,7 @@ public class AccountApiController {
     @PostMapping("signup")
     public ResponseEntity<SignUpResponseDto> signUp(@Validated @RequestBody SignUpRequestDto signUpRequestDto) {
         SignUpResponseDto dto = accountService.saveMember(signUpRequestDto);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(dto);
     }
@@ -28,6 +29,7 @@ public class AccountApiController {
     @DeleteMapping("delete")
     public ResponseEntity<String> withdrawal(@LoggedInUser Member member) {
         accountService.deleteMember(member);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body("success");
     }

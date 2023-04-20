@@ -73,7 +73,7 @@ public class SecurityTest {
     @Test
     @DisplayName("로그인 성공")
     void login_success() {
-        String accessToken = authenticationService.signIn("test", "test1234").getAccessToken();
+        String accessToken = authenticationService.signIn("test", "test1234", null).getAccessToken();
 
         assertThat(accessToken).isNotNull();
     }
@@ -81,13 +81,13 @@ public class SecurityTest {
     @Test
     @DisplayName("로그인 실패")
     void login_fail() {
-        assertThatThrownBy(() -> authenticationService.signIn("test", "test1233")).isInstanceOf(RestApiException.class);
+        assertThatThrownBy(() -> authenticationService.signIn("test", "test1233", null)).isInstanceOf(RestApiException.class);
     }
 
     @Test
     @DisplayName("accessToken 검증 성공")
     void access_token_validate_success() {
-        String accessToken = authenticationService.signIn("test", "test1234").getAccessToken();
+        String accessToken = authenticationService.signIn("test", "test1234", null).getAccessToken();
 
         assertThat(jwtTokenProvider.validateToken(accessToken)).isTrue();
     }
@@ -144,11 +144,11 @@ public class SecurityTest {
     @Test
     @DisplayName("로그아웃_성공")
     void signOutTest() throws Exception {
-        String accessToken = authenticationService.signIn("test", "test1234").getAccessToken();
+        String accessToken = authenticationService.signIn("test", "test1234", null).getAccessToken();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + accessToken);
 
-        authenticationService.signOut(accessToken);
+        authenticationService.signOut(accessToken, "test",null);
 
 
         mockMvc.perform(post("/auth/signout")

@@ -25,12 +25,16 @@ public class AuthenticationService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public TokenDto signIn(String id, String password) {
+    public TokenDto signIn(String id, String password, String fcmToken) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
 
         // 실제 검증(사용자 비밀번호 체크)
         // authenticate 메서드 실행 시 JwtUserDetailsService 에서 만든 loadUserByName 메서드 실행
         Authentication authentication = getAuthentication(authenticationToken);
+
+        // fcm token 저장
+        if (fcmToken != null)
+            redisTemplate.opsForList().rightPush(id, fcmToken);
 
         return jwtTokenProvider.generateToken(authentication);
     }
@@ -43,11 +47,14 @@ public class AuthenticationService {
         }
     }
 
-    public void signOut(String accessToken) {
+    public void signOut(String accessToken, String memberId, String fcmToken) {
         redisTemplate.opsForValue()
                 .set(accessToken,
                         "signOut",
                         jwtTokenProvider.getExpiration(accessToken) - (new Date()).getTime(),
                         TimeUnit.MILLISECONDS);
+
+        if (fcmToken != null)
+            redisTemplate.opsForList().remove(memberId, 0, fcmToken);
     }
 }

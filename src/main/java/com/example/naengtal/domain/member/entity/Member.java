@@ -1,5 +1,6 @@
 package com.example.naengtal.domain.member.entity;
 
+import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -28,6 +31,13 @@ public class Member {
     @ManyToOne
     @JoinColumn(name = "fridge_id", nullable = false)
     private Fridge fridge;
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    private List<Alarm> alarm = new ArrayList<>();
+
+    @OneToMany(mappedBy = "inviter", orphanRemoval = true)
+    private List<Alarm> relatedAlarms = new ArrayList<>();
+
 
     @Builder
     public Member(String id, String name, String password, Fridge fridge) {
