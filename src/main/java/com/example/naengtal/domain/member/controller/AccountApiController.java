@@ -37,7 +37,7 @@ public class AccountApiController {
 
     @PostMapping("edit")
     public ResponseEntity<String> editName(@Parameter(hidden = true) @LoggedInUser Member member,
-                                           @PathVariable(value = "name") String name) {
+                                           @RequestParam(value = "name") String name) {
         accountService.editName(member, name);
 
         return ResponseEntity.status(HttpStatus.OK)

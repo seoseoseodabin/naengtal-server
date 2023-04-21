@@ -55,8 +55,8 @@ public class FridgeShareApiController {
                 .body("success");
     }
 
-    @PostMapping("leave")
-    public ResponseEntity<String> leaveFridge(@Parameter(hidden = true) @LoggedInUser Member member){
+    @PostMapping("leave/fridge")
+    public ResponseEntity<String> leaveFridge(@Parameter(hidden = true) @LoggedInUser Member member) {
         memberInvitationService.leaveFridge(member);
 
         return ResponseEntity.status(HttpStatus.OK)
