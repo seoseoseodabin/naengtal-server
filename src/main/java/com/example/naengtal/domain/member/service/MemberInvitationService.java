@@ -15,7 +15,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.ALARM_NOT_FOUND;
@@ -82,5 +81,19 @@ public class MemberInvitationService {
 
         // 해당 알림 삭제
         alarmRepository.delete(alarm);
+    }
+
+    public void leaveFridge(Member member) {
+        Fridge preFridge = member.getFridge();
+
+        // 냉장고의 마지막 남은 사용자일 때 -> 기존 냉장고 삭제
+        if (preFridge.getSharedMembers().size() == 1) {
+            fridgeRepository.delete(preFridge);
+        }
+
+        Fridge newFridge = new Fridge();
+        fridgeRepository.save(newFridge);
+
+        member.setFridge(newFridge);
     }
 }
