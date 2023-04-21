@@ -3,8 +3,8 @@ package com.example.naengtal.domain.member.service;
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.repository.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
+import com.example.naengtal.domain.member.dto.MemberInfo;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
-import com.example.naengtal.domain.member.dto.SignUpResponseDto;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class AccountService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public SignUpResponseDto saveMember(SignUpRequestDto signUpRequestDto) {
+    public MemberInfo saveMember(SignUpRequestDto signUpRequestDto) {
         // id 중복 검사
         memberRepository.findById(signUpRequestDto.getId()).ifPresent(a -> {
             throw new RestApiException(UNAVAILABLE_ID);
@@ -49,11 +49,7 @@ public class AccountService {
                 .fridge(fridge)
                 .build());
 
-        return SignUpResponseDto.builder()
-                .name(member.getName())
-                .id(member.getId())
-                .fridgeId(fridge.getId())
-                .build();
+        return getInfo(member);
     }
 
     public void deleteMember(Member member) {
@@ -65,5 +61,17 @@ public class AccountService {
         // jpa 영속성 컨텍스트 때문에 0이 아닌 1로 검사를 해줘야 함
         if (fridge.getSharedMembers().size() == 1)
             fridgeRepository.delete(fridge);
+    }
+
+    public void editName(Member member, String name) {
+        member.setName(name);
+    }
+
+    public MemberInfo getInfo(Member member) {
+        return MemberInfo.builder()
+                .name(member.getName())
+                .id(member.getId())
+                .fridgeId(member.getFridge().getId())
+                .build();
     }
 }
