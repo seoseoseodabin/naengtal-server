@@ -3,8 +3,8 @@ package com.example.naengtal.domain.member.service;
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.repository.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
+import com.example.naengtal.domain.member.dto.MemberInfo;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
-import com.example.naengtal.domain.member.dto.SignUpResponseDto;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.error.RestApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -63,12 +64,12 @@ class AccountServiceTest {
                 .password("test1234")
                 .confirmPassword("test1234")
                 .build();
-        SignUpResponseDto signUpResponseDto = accountService.saveMember(signUpRequestDto);
+        MemberInfo memberInfo = accountService.saveMember(signUpRequestDto);
 
         // then
-        assertThat(signUpResponseDto.getId(), is(member.getId()));
-        assertThat(signUpResponseDto.getName(), is(member.getName()));
-        assertThat(signUpResponseDto.getFridgeId(), is(member.getFridge().getId()));
+        assertThat(memberInfo.getId(), is(member.getId()));
+        assertThat(memberInfo.getName(), is(member.getName()));
+        assertThat(memberInfo.getFridgeId(), is(member.getFridge().getId()));
         then(passwordEncoder).should(times(1)).encode(any());
     }
 
@@ -95,7 +96,7 @@ class AccountServiceTest {
 
         // then
         RestApiException exception = assertThrows(RestApiException.class, () ->
-            accountService.saveMember(signUpRequestDto)
+                accountService.saveMember(signUpRequestDto)
         );
         assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
         assertThat(exception.getErrorCode().name(), is("UNAVAILABLE_ID"));
@@ -105,6 +106,28 @@ class AccountServiceTest {
     @DisplayName("비밀번호와 확인용 비밀번호 불일치하는 경우")
     public void signUpFailWithWrongConfirmPassword() {
         // given
+        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+                .name("test")
+                .id("test")
+                .password("test1234")
+                .confirmPassword("1234test")
+                .build();
+
+        // when
+        RestApiException exception = assertThrows(RestApiException.class, () ->
+                accountService.saveMember(signUpRequestDto)
+        );
+
+        // then
+        assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
+        assertThat(exception.getErrorCode().name(), is("WRONG_CONFIRM_PASSWORD"));
+    }
+
+    @Test
+    @DisplayName("닉네임 변경")
+    public void editName() {
+        // given
+        String newName = "newName";
         Fridge fridge = new Fridge(1);
         Member member = Member.builder()
                 .name("test")
@@ -114,19 +137,30 @@ class AccountServiceTest {
                 .build();
 
         // when
-        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
-                .name("test")
-                .id("test")
-                .password("test1234")
-                .confirmPassword("1234test")
-                .build();
-
-        RestApiException exception = assertThrows(RestApiException.class, () ->
-            accountService.saveMember(signUpRequestDto)
-        );
+        accountService.editName(member, newName);
 
         // then
-        assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(exception.getErrorCode().name(), is("WRONG_CONFIRM_PASSWORD"));
+        assertThat(member.getName()).isEqualTo(newName);
+    }
+
+    @Test
+    @DisplayName("본인 계정 정보 가져오기")
+    public void getInfo() {
+        Fridge fridge = new Fridge(1);
+        Member member = Member.builder()
+                .name("test")
+                .id("test")
+                .password("encodedPassword")
+                .fridge(fridge)
+                .build();
+        MemberInfo originMemberInfo = MemberInfo.builder()
+                .id("test")
+                .name("test")
+                .fridgeId(1)
+                .build();
+
+        MemberInfo memberInfo = accountService.getInfo(member);
+
+        assertThat(memberInfo).usingRecursiveComparison().isEqualTo(originMemberInfo);
     }
 }

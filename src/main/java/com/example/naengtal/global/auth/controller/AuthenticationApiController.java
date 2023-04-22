@@ -27,6 +27,7 @@ public class AuthenticationApiController {
     private ResponseEntity<TokenDto> signIn(@Validated @RequestBody SignInRequestDto signInRequestDto) {
         TokenDto tokenDto = authenticationService.signIn(
                 signInRequestDto.getId(), signInRequestDto.getPassword(), signInRequestDto.getFcmToken());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tokenDto);
     }

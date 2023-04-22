@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,7 +29,6 @@ public class FridgeShareApiController {
                                                           @PathVariable("name_or_id") String nameOrId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(memberSearchService.search(inviter, nameOrId));
-
     }
 
     @GetMapping("get/sharedmembers")
@@ -50,6 +50,14 @@ public class FridgeShareApiController {
     public ResponseEntity<String> accept(@Parameter(hidden = true) @LoggedInUser Member invitee,
                                          @PathVariable("alarm_id") int alarmId) {
         memberInvitationService.accept(invitee, alarmId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("success");
+    }
+
+    @PostMapping("leave/fridge")
+    public ResponseEntity<String> leaveFridge(@Parameter(hidden = true) @LoggedInUser Member member) {
+        memberInvitationService.leaveFridge(member);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("success");
