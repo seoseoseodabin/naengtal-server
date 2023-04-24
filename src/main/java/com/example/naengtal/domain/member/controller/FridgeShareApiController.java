@@ -37,7 +37,7 @@ public class FridgeShareApiController {
                 .body(memberSearchService.searchSharedMembers(member));
     }
 
-    @GetMapping("invite/{member_id}")
+    @PostMapping("invite/{member_id}")
     public ResponseEntity<String> invite(@Parameter(hidden = true) @LoggedInUser Member inviter,
                                          @PathVariable("member_id") String inviteeId) {
         memberInvitationService.invite(inviter, inviteeId);
@@ -46,7 +46,7 @@ public class FridgeShareApiController {
                 .body("success");
     }
 
-    @GetMapping("accept/{alarm_id}")
+    @PostMapping("accept/{alarm_id}")
     public ResponseEntity<String> accept(@Parameter(hidden = true) @LoggedInUser Member invitee,
                                          @PathVariable("alarm_id") int alarmId) {
         memberInvitationService.accept(invitee, alarmId);

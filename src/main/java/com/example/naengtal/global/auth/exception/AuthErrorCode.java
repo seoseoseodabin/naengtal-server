@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
 
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN"),
-    WRONG_ID_OR_PASSWORD(HttpStatus.BAD_REQUEST, "WRONG_ID_OR_PASSWORD");
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "invalid token"),
+    WRONG_ID_OR_PASSWORD(HttpStatus.BAD_REQUEST, "wrong id or password");
 
     private final HttpStatus httpStatus;
     private final String message;
