@@ -71,7 +71,6 @@ public class AccountService {
         return MemberInfo.builder()
                 .name(member.getName())
                 .id(member.getId())
-                .fridgeId(member.getFridge().getId())
                 .build();
     }
 }
