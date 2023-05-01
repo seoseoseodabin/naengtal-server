@@ -1,5 +1,6 @@
 package com.example.naengtal.domain.fridge.entity;
 
+import com.example.naengtal.domain.ingredient.entity.Ingredient;
 import com.example.naengtal.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,9 @@ public class Fridge {
 
     @OneToMany(mappedBy = "fridge")
     private List<Member> sharedMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fridge")
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     public Fridge(int id) { this.id = id; }
 }
