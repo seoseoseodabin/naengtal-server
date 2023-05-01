@@ -1,8 +1,8 @@
 package com.example.naengtal.domain.member.service;
 
-import com.example.naengtal.domain.alarm.repository.AlarmRepository;
+import com.example.naengtal.domain.alarm.dao.AlarmRepository;
 import com.example.naengtal.domain.fridge.entity.Fridge;
-import com.example.naengtal.domain.fridge.repository.FridgeRepository;
+import com.example.naengtal.domain.fridge.dao.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import org.junit.jupiter.api.DisplayName;

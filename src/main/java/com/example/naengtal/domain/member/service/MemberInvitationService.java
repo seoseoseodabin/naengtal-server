@@ -2,9 +2,9 @@ package com.example.naengtal.domain.member.service;
 
 import com.example.naengtal.domain.alarm.dto.FcmInvitationDto;
 import com.example.naengtal.domain.alarm.entity.Alarm;
-import com.example.naengtal.domain.alarm.repository.AlarmRepository;
+import com.example.naengtal.domain.alarm.dao.AlarmRepository;
 import com.example.naengtal.domain.fridge.entity.Fridge;
-import com.example.naengtal.domain.fridge.repository.FridgeRepository;
+import com.example.naengtal.domain.fridge.dao.FridgeRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.FcmService;
