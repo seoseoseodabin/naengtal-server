@@ -51,7 +51,7 @@ public class S3Uploader {
     }
 
     public void deleteFile(String fileName) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket + "/image", fileName.substring(59)));
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName.substring(62)));
     }
 
     // 파일 이름 생성(중복 피하기)
