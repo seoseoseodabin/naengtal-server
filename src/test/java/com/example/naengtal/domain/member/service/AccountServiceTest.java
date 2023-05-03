@@ -69,7 +69,6 @@ class AccountServiceTest {
         // then
         assertThat(memberInfo.getId(), is(member.getId()));
         assertThat(memberInfo.getName(), is(member.getName()));
-        assertThat(memberInfo.getFridgeId(), is(member.getFridge().getId()));
         then(passwordEncoder).should(times(1)).encode(any());
     }
 
@@ -156,7 +155,6 @@ class AccountServiceTest {
         MemberInfo originMemberInfo = MemberInfo.builder()
                 .id("test")
                 .name("test")
-                .fridgeId(1)
                 .build();
 
         MemberInfo memberInfo = accountService.getInfo(member);
