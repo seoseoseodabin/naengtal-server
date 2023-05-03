@@ -21,5 +21,5 @@ public class IngredientResponseDto {
     private String image;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    private LocalDate expirationTime;
+    private LocalDate expirationDate;
 }

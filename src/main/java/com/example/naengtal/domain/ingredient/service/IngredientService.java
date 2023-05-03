@@ -55,7 +55,7 @@ public class IngredientService {
                         .id(ingredient.getIngredientId())
                         .name(ingredient.getName())
                         .category(ingredient.getCategory())
-                        .expirationTime(ingredient.getExpirationDate())
+                        .expirationDate(ingredient.getExpirationDate())
                         .image(ingredient.getImage())
                         .build())
                 .collect(Collectors.toList());
