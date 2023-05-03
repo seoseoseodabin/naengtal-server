@@ -27,8 +27,10 @@ public class Fridge {
     @OneToMany(mappedBy = "fridge")
     private List<Member> sharedMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "fridge")
+    @OneToMany(mappedBy = "fridge", orphanRemoval = true)
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    public Fridge(int id) { this.id = id; }
+    public Fridge(int id) {
+        this.id = id;
+    }
 }
