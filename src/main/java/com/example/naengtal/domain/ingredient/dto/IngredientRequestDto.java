@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Setter
@@ -17,7 +18,7 @@ public class IngredientRequestDto {
     @NotBlank
     private String category;
 
-    @NotBlank
+    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
     private LocalDate expirationDate;
 }

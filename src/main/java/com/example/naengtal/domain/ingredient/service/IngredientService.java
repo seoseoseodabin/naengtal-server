@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.example.naengtal.domain.ingredient.exception.IngredientErrorCode.INGREDIENT_NOT_FOUND;
 import static com.example.naengtal.global.error.CommonErrorCode.FORBIDDEN;
+import static com.example.naengtal.global.error.CommonErrorCode.INVALID_PARAMETER;
 
 @Service
 @Transactional
@@ -29,6 +30,9 @@ public class IngredientService {
 
     public void save(Member member, MultipartFile image, IngredientRequestDto ingredientRequestDto) {
         // 이미지 업로드
+        if (image.isEmpty()) {
+            throw new RestApiException(INVALID_PARAMETER);
+        }
         String path = s3Uploader.upload(image);
 
         Ingredient ingredient = Ingredient.builder()
