@@ -2,10 +2,13 @@ package com.example.naengtal.domain.member.service;
 
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.dao.FridgeRepository;
+import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
+import com.example.naengtal.domain.ingredient.service.IngredientService;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.dto.MemberInfo;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
 import com.example.naengtal.domain.member.entity.Member;
+import com.example.naengtal.global.common.service.S3Uploader;
 import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +29,10 @@ public class AccountService {
     private final FridgeRepository fridgeRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final IngredientRepository ingredientRepository;
+
+    private final S3Uploader s3Uploader;
 
     public MemberInfo saveMember(SignUpRequestDto signUpRequestDto) {
         // id 중복 검사
@@ -53,14 +60,17 @@ public class AccountService {
     }
 
     public void deleteMember(Member member) {
-        // 외래키 제약 조건 때문에 member 먼저 삭제 후 fridge 삭제해야 함
+        // fridge 에 속한 재료들의 이미지 삭제
         Fridge fridge = member.getFridge();
+        ingredientRepository.findByFridge(fridge)
+                        .forEach(ingredient ->
+                                s3Uploader.deleteFile(ingredient.getImage()));
+
+        if (fridge.getSharedMembers().size() == 1) {
+            fridgeRepository.delete(fridge);
+        }
 
         memberRepository.delete(member);
-
-        // jpa 영속성 컨텍스트 때문에 0이 아닌 1로 검사를 해줘야 함
-        if (fridge.getSharedMembers().size() == 1)
-            fridgeRepository.delete(fridge);
     }
 
     public void editName(Member member, String name) {
