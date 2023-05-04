@@ -74,12 +74,10 @@ public class MemberInvitationService {
             throw new RestApiException(NOT_OWN_ALARM);
 
         // 기존 냉장고 삭제하고 초대한 사람의 냉장고 사용하기
-        Fridge deleteFridge = invitee.getFridge();
+        if (invitee.getFridge().getSharedMembers().size() == 1)
+            fridgeRepository.delete(invitee.getFridge());
 
         invitee.setFridge(alarm.getInviter().getFridge());
-
-        if (deleteFridge.getSharedMembers().size() == 1)
-            fridgeRepository.delete(deleteFridge);
 
         // 해당 알림 삭제
         alarmRepository.delete(alarm);
