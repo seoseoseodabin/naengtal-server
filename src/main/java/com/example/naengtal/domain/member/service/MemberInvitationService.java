@@ -57,11 +57,13 @@ public class MemberInvitationService {
         // 푸시 알림 보내기
         List<String> tokenList = redisTemplate.opsForList().range(inviteeId, 0, -1);
 
-        fcmService.sendByTokenList(tokenList, FcmInvitationDto.builder()
-                .title("냉장고 공유 초대 요청")
-                .body(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
-                .type(FcmType.INVITATION)
-                .build());
+        if (tokenList.size() != 0)
+            fcmService.sendByTokenList(tokenList, FcmInvitationDto.builder()
+                    .title("냉장고 공유 초대 요청")
+                    .body(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
+                    .type(FcmType.INVITATION)
+                    .build());
+        else return;
     }
 
     public void accept(Member invitee, int alarmId) {
