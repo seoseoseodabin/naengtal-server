@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 import static com.example.naengtal.global.error.CommonErrorCode.IMAGE_UPLOAD_FAIL;
+import static com.example.naengtal.global.error.CommonErrorCode.ONLY_IMAGE_ALLOWED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class S3Uploader {
 
     // MultipartFile 을 전달받아 File 로 전환한 후 S3에 업로드
     public String upload(MultipartFile multipartFile) {
+        validateContentType(multipartFile);
         String s3FileName = createFileName();
 
         try {
@@ -57,5 +59,14 @@ public class S3Uploader {
     // 파일 이름 생성(중복 피하기)
     private String createFileName() {
         return UUID.randomUUID().toString();
+    }
+
+    // 파일 확장자 검사 (jpg, png 만 가능)
+    private void validateContentType(MultipartFile multipartFile) {
+        String contentType = multipartFile.getContentType();
+        System.out.println(contentType);
+        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+            throw new RestApiException(ONLY_IMAGE_ALLOWED);
+        }
     }
 }

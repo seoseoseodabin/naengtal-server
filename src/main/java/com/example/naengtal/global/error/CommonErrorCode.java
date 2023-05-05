@@ -12,7 +12,8 @@ public enum CommonErrorCode implements ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "resource not exists"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "forbidden"),
-    IMAGE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "image upload fail");
+    IMAGE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "image upload fail"),
+    ONLY_IMAGE_ALLOWED(HttpStatus.BAD_REQUEST, "only image are allowed for upload");
 
     private final HttpStatus httpStatus;
     private final String message;
