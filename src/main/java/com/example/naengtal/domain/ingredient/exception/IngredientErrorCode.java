@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum IngredientErrorCode implements ErrorCode {
 
-    INGREDIENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "ingredient not found");
+    INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ingredient not found");
 
     private final HttpStatus httpStatus;
     private final String message;
