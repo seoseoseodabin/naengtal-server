@@ -1,4 +1,4 @@
-package com.example.naengtal.domain.fridge.repository;
+package com.example.naengtal.domain.fridge.dao;
 
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import org.springframework.data.jpa.repository.JpaRepository;

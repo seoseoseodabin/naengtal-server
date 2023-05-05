@@ -2,13 +2,15 @@ package com.example.naengtal.domain.member.service;
 
 import com.example.naengtal.domain.alarm.dto.FcmInvitationDto;
 import com.example.naengtal.domain.alarm.entity.Alarm;
-import com.example.naengtal.domain.alarm.repository.AlarmRepository;
+import com.example.naengtal.domain.alarm.dao.AlarmRepository;
 import com.example.naengtal.domain.fridge.entity.Fridge;
-import com.example.naengtal.domain.fridge.repository.FridgeRepository;
+import com.example.naengtal.domain.fridge.dao.FridgeRepository;
+import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.FcmService;
 import com.example.naengtal.global.common.service.FcmType;
+import com.example.naengtal.global.common.service.S3Uploader;
 import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,6 +37,10 @@ public class MemberInvitationService {
     private final FridgeRepository fridgeRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final IngredientRepository ingredientRepository;
+
+    private final S3Uploader s3Uploader;
 
     public void invite(Member inviter, String inviteeId) {
         Member invitee = memberRepository.findById(inviteeId)
@@ -74,8 +80,9 @@ public class MemberInvitationService {
             throw new RestApiException(NOT_OWN_ALARM);
 
         // 기존 냉장고 삭제하고 초대한 사람의 냉장고 사용하기
-        if (invitee.getFridge().getSharedMembers().size() == 1)
-            fridgeRepository.delete(invitee.getFridge());
+        if (invitee.getFridge().getSharedMembers().size() == 1){
+            deleteFridge(invitee.getFridge());
+        }
 
         invitee.setFridge(alarm.getInviter().getFridge());
 
@@ -88,12 +95,20 @@ public class MemberInvitationService {
 
         // 냉장고의 마지막 남은 사용자일 때 -> 기존 냉장고 삭제
         if (preFridge.getSharedMembers().size() == 1) {
-            fridgeRepository.delete(preFridge);
+            deleteFridge(preFridge);
         }
 
         Fridge newFridge = new Fridge();
         fridgeRepository.save(newFridge);
 
         member.setFridge(newFridge);
+    }
+
+    private void deleteFridge(Fridge fridge){
+        ingredientRepository.findByFridge(fridge)
+                .forEach(ingredient ->
+                        s3Uploader.deleteFile(ingredient.getImage()));
+
+        fridgeRepository.delete(fridge);
     }
 }

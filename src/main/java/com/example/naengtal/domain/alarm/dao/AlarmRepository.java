@@ -1,4 +1,4 @@
-package com.example.naengtal.domain.alarm.repository;
+package com.example.naengtal.domain.alarm.dao;
 
 import com.example.naengtal.domain.alarm.entity.Alarm;
 import org.springframework.data.jpa.repository.JpaRepository;
