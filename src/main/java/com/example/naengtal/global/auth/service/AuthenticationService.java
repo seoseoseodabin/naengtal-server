@@ -40,12 +40,13 @@ public class AuthenticationService {
         Authentication authentication = getAuthentication(authenticationToken);
 
         // fcm token 저장
-        if (fcmToken != null)
+        if (fcmToken != null){
             redisTemplate.opsForList().rightPush(id, fcmToken);
 
-        // fcm 냉장고 구독
-        Member member = memberRepository.findById(id).orElseThrow(() -> new RestApiException(MEMBER_NOT_FOUND));
-        fcmService.subscribeFridge(member, Collections.singletonList(fcmToken));
+            // fcm 냉장고 구독
+            Member member = memberRepository.findById(id).orElseThrow(() -> new RestApiException(MEMBER_NOT_FOUND));
+            fcmService.subscribeFridge(member, Collections.singletonList(fcmToken));
+        }
 
         return jwtTokenProvider.generateToken(authentication);
     }
@@ -65,9 +66,9 @@ public class AuthenticationService {
                         jwtTokenProvider.getExpiration(accessToken) - (new Date()).getTime(),
                         TimeUnit.MILLISECONDS);
 
-        if (fcmToken != null)
+        if (fcmToken != null){
             redisTemplate.opsForList().remove(member.getId(), 0, fcmToken);
-
-        fcmService.unsubscribeFridge(member, Collections.singletonList(fcmToken));
+            fcmService.unsubscribeFridge(member, Collections.singletonList(fcmToken));
+        }
     }
 }

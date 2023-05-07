@@ -1,7 +1,9 @@
 package com.example.naengtal.global.auth;
 
+import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.dto.SignUpRequestDto;
+import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.domain.member.service.AccountService;
 import com.example.naengtal.global.auth.jwt.JwtTokenProvider;
 import com.example.naengtal.global.auth.service.AuthenticationService;
@@ -147,8 +149,13 @@ public class SecurityTest {
         String accessToken = authenticationService.signIn("test", "test1234", null).getAccessToken();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + accessToken);
-
-        authenticationService.signOut(accessToken, "test",null);
+        Member member = Member.builder()
+                .name("test")
+                .id("test")
+                .password("test1234")
+                .fridge(new Fridge(1))
+                .build();
+        authenticationService.signOut(accessToken, member, null);
 
 
         mockMvc.perform(post("/auth/signout")

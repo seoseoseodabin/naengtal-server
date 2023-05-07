@@ -10,7 +10,6 @@ import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.FcmService;
 import com.example.naengtal.global.common.service.FcmType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,6 @@ public class ExpirationNotificationScheduler {
 
     private final IngredientRepository ingredientRepository;
     private final IngredientAlarmRepository ingredientAlarmRepository;
-    private final RedisTemplate<String, String> redisTemplate;
     private final FcmService fcmService;
     private LocalDate now;
 

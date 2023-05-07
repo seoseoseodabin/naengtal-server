@@ -1,13 +1,19 @@
 package com.example.naengtal.domain.ingredientalarm.entity;
 
 import com.example.naengtal.domain.member.entity.Member;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@Getter
 @Table(name = "ingredient_alarm")
 public class IngredientAlarm {
 
