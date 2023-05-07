@@ -2,6 +2,7 @@ package com.example.naengtal.domain.member.entity;
 
 import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.fridge.entity.Fridge;
+import com.example.naengtal.domain.ingredientalarm.entity.IngredientAlarm;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,8 @@ public class Member {
     @OneToMany(mappedBy = "inviter", orphanRemoval = true)
     private List<Alarm> relatedAlarms = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    private List<IngredientAlarm> ingredientAlarms = new ArrayList<>();
 
     @Builder
     public Member(String id, String name, String password, Fridge fridge) {
