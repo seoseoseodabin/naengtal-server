@@ -51,7 +51,7 @@ public class ExpirationNotificationScheduler {
 
     private void saveAlarm(Ingredient ingredient) {
         System.out.println(ingredient.getName());
-        String message = ingredient.getName() + " " + getMessage(getTimeDifference(ingredient.getExpirationDate()));
+        String message = ingredient.getName() + getMessage(getTimeDifference(ingredient.getExpirationDate()));
 
         Fridge fridge = ingredient.getFridge();
         List<Member> sharedMembers = fridge.getSharedMembers();
