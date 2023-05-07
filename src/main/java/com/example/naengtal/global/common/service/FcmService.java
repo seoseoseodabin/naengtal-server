@@ -1,6 +1,7 @@
 package com.example.naengtal.global.common.service;
 
-import com.example.naengtal.domain.alarm.dto.FcmInvitationDto;
+import com.example.naengtal.domain.alarm.dto.FcmNotificationDto;
+import com.example.naengtal.domain.member.entity.Member;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -24,21 +25,20 @@ public class FcmService {
     @Value("${fcm.key.path}")
     private String FCM_PRIVATE_KEY_PATH;
 
-
     @PostConstruct
     public void init() throws IOException {
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(
                         GoogleCredentials
                                 .fromStream(new FileInputStream(FCM_PRIVATE_KEY_PATH))
-                                )
+                )
                 .build();
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseApp.initializeApp(options);
         }
     }
 
-    public void sendByTokenList(List<String> tokenList, FcmInvitationDto dto) {
+    public void sendByTokenList(List<String> tokenList, FcmNotificationDto dto) {
         MulticastMessage multicastMessage = makeMulticastMessage(tokenList, dto);
 
         try {
@@ -55,12 +55,27 @@ public class FcmService {
                 log.error("List of tokens are not valid FCM token : " + failedTokens);
             }
         } catch (FirebaseMessagingException e) {
-                log.error("cannot send to memberList push message. error info : {}", e.getMessage());
+            log.error("cannot send to memberList push message. error info : {}", e.getMessage());
         }
 
     }
 
-    public MulticastMessage makeMulticastMessage(List<String> tokenList, FcmInvitationDto dto) {
+    public void sendByTopic(String topic, FcmNotificationDto dto) {
+        Message message = Message.builder()
+                .setTopic(topic)
+                .setNotification(
+                        Notification.builder()
+                                .setTitle(dto.getTitle())
+                                .setBody(dto.getBody())
+                                .build()
+                )
+                .putData("type", dto.getType().name())
+                .build();
+
+        FirebaseMessaging.getInstance().sendAsync(message);
+    }
+
+    public MulticastMessage makeMulticastMessage(List<String> tokenList, FcmNotificationDto dto) {
         return MulticastMessage.builder()
                 .addAllTokens(tokenList)
                 .setNotification(
@@ -71,5 +86,13 @@ public class FcmService {
                 )
                 .putData("type", dto.getType().name())
                 .build();
+    }
+
+    public void subscribeFridge(Member member, List<String> fcmTokens) {
+        FirebaseMessaging.getInstance().subscribeToTopicAsync(fcmTokens, String.valueOf(member.getFridge().getId()));
+    }
+
+    public void unsubscribeFridge(Member member, List<String> fcmTokens) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopicAsync(fcmTokens, String.valueOf(member.getFridge().getId()));
     }
 }
