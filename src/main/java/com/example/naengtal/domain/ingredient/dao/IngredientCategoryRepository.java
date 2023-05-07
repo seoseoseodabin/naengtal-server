@@ -13,4 +13,7 @@ public interface IngredientCategoryRepository extends JpaRepository<IngredientCa
 
     @Query("select distinct c.category from IngredientCategory c where c.category like %:category% order by c.category")
     List<String> findByCategoryContainsOrderByCategory(@Param("category") String category);
+
+    @Query("select c.recipeCode from IngredientCategory c where c.category like :category")
+    List<Integer> findRecipeCodeByCategory(@Param("category") String category);
 }
