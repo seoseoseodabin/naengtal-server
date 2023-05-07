@@ -1,10 +1,10 @@
 package com.example.naengtal.domain.member.service;
 
-import com.example.naengtal.domain.alarm.dto.FcmInvitationDto;
-import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.alarm.dao.AlarmRepository;
-import com.example.naengtal.domain.fridge.entity.Fridge;
+import com.example.naengtal.domain.alarm.dto.FcmNotificationDto;
+import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.fridge.dao.FridgeRepository;
+import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.entity.Member;
@@ -63,13 +63,13 @@ public class MemberInvitationService {
         // 푸시 알림 보내기
         List<String> tokenList = redisTemplate.opsForList().range(inviteeId, 0, -1);
 
-        if (tokenList.size() != 0)
-            fcmService.sendByTokenList(tokenList, FcmInvitationDto.builder()
+        if (tokenList != null && tokenList.size() != 0) {
+            fcmService.sendByTokenList(tokenList, FcmNotificationDto.builder()
                     .title("냉장고 공유 초대 요청")
                     .body(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
                     .type(FcmType.INVITATION)
                     .build());
-        else return;
+        }
     }
 
     public void accept(Member invitee, int alarmId) {
@@ -80,11 +80,13 @@ public class MemberInvitationService {
             throw new RestApiException(NOT_OWN_ALARM);
 
         // 기존 냉장고 삭제하고 초대한 사람의 냉장고 사용하기
-        if (invitee.getFridge().getSharedMembers().size() == 1){
+        fcmService.unsubscribeFridge(invitee, getTokenList(invitee));
+        if (invitee.getFridge().getSharedMembers().size() == 1) {
             deleteFridge(invitee.getFridge());
         }
 
         invitee.setFridge(alarm.getInviter().getFridge());
+        fcmService.subscribeFridge(invitee, getTokenList(invitee));
 
         // 해당 알림 삭제
         alarmRepository.delete(alarm);
@@ -94,6 +96,7 @@ public class MemberInvitationService {
         Fridge preFridge = member.getFridge();
 
         // 냉장고의 마지막 남은 사용자일 때 -> 기존 냉장고 삭제
+        fcmService.unsubscribeFridge(member, getTokenList(member));
         if (preFridge.getSharedMembers().size() == 1) {
             deleteFridge(preFridge);
         }
@@ -102,13 +105,18 @@ public class MemberInvitationService {
         fridgeRepository.save(newFridge);
 
         member.setFridge(newFridge);
+        fcmService.subscribeFridge(member, getTokenList(member));
     }
 
-    private void deleteFridge(Fridge fridge){
+    private void deleteFridge(Fridge fridge) {
         ingredientRepository.findByFridge(fridge)
                 .forEach(ingredient ->
                         s3Uploader.deleteFile(ingredient.getImage()));
 
         fridgeRepository.delete(fridge);
+    }
+
+    private List<String> getTokenList(Member member) {
+        return redisTemplate.opsForList().range(member.getId(), 0, -1);
     }
 }

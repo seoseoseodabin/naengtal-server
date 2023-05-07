@@ -36,7 +36,7 @@ public class AuthenticationApiController {
     private ResponseEntity<String> signOut(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                            @Parameter(hidden = true) @LoggedInUser Member member,
                                            @RequestParam("fcmtoken") String fcmToken) {
-        authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()), member.getId(), fcmToken);
+        authenticationService.signOut(authorization.substring(BEARER_PREFIX.length()), member, fcmToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .body("signout success!");
     }
