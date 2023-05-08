@@ -3,7 +3,6 @@ package com.example.naengtal.domain.recipe.service;
 import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.ingredient.entity.Ingredient;
-import com.example.naengtal.domain.ingredient.entity.IngredientCategory;
 import com.example.naengtal.domain.recipe.dao.RecipeInfoRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeIngredientRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeProcessRepository;
