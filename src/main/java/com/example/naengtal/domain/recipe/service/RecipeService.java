@@ -61,7 +61,7 @@ public class RecipeService {
     }
 
     public SpecificRecipeResponseDto getSpecificRecipe(int recipeCode) {
-        // get info, ingredinet, process from repository
+        // get info, ingredient, process from repository
         RecipeInfo info = recipeInfoRepository.findById(recipeCode)
                 .orElseThrow(() -> new RestApiException(RECIPE_NOT_FOUND));
 
