@@ -2,6 +2,7 @@ package com.example.naengtal.domain.member.service;
 
 
 import com.example.naengtal.domain.alarm.dao.AlarmRepository;
+import com.example.naengtal.domain.alarm.dto.AlarmResponseDto;
 import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.fridge.dao.FridgeRepository;
@@ -21,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +72,7 @@ class MemberInvitationServiceTest {
                 .fridge(fridge1)
                 .build();
         List<String> tokenList = new ArrayList<>();
+        tokenList.add("fcmtoken");
 
         given(memberRepository.findById(any(String.class))).willReturn(Optional.of(invitee));
         given(redisTemplate.opsForList()).willReturn(listOperations);
@@ -353,4 +356,138 @@ class MemberInvitationServiceTest {
         assertThat(member2.getFridge().getId()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("초대 거절 성공")
+    void reject_success() {
+        // given
+        Fridge fridge1 = new Fridge(1);
+        Fridge fridge2 = new Fridge(2);
+        Member invitee = Member.builder()
+                .name("invitee")
+                .id("invitee")
+                .password("encodedPassword")
+                .fridge(fridge1)
+                .build();
+        Member inviter = Member.builder()
+                .name("inviter")
+                .id("inviter")
+                .password("encodedPassword")
+                .fridge(fridge2)
+                .build();
+        Alarm alarm = Alarm.builder()
+                .member(invitee)
+                .inviter(inviter)
+                .text(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
+                .build();
+
+        given(alarmRepository.findById(anyInt())).willReturn(Optional.of(alarm));
+
+        // when
+        int alarmId = 1;
+        memberInvitationService.reject(invitee, alarmId);
+
+        // then
+        then(alarmRepository).should(times(1)).delete(any(Alarm.class));
+    }
+
+    @Test
+    @DisplayName("alarmId에 해당하는 알람을 못 찾아서 거절 실패")
+    void reject_fail_ALARM_NOT_FOUND() {
+        // given
+        given(alarmRepository.findById(anyInt())).willThrow(new RestApiException(ALARM_NOT_FOUND));
+
+        // when
+        Fridge fridge = new Fridge(1);
+        Member invitee = Member.builder()
+                .name("invitee")
+                .id("invitee")
+                .password("encodedPassword")
+                .fridge(fridge)
+                .build();
+        int alarmId = 1;
+
+        // then
+        RestApiException exception = assertThrows(RestApiException.class, () ->
+                memberInvitationService.reject(invitee, alarmId)
+        );
+        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
+        MatcherAssert.assertThat(exception.getErrorCode().name(), is("ALARM_NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("invitee에 속한 알람이 아니어서 거절 실패")
+    void reject_fail_NOT_OWN_ALARM() {
+        // given
+        Fridge fridge1 = new Fridge(1);
+        Fridge fridge2 = new Fridge(2);
+        Member invitee1 = Member.builder()
+                .name("invitee1")
+                .id("invitee1")
+                .password("encodedPassword")
+                .fridge(fridge1)
+                .build();
+        Member invitee2 = Member.builder()
+                .name("invitee2")
+                .id("invitee2")
+                .password("encodedPassword")
+                .fridge(fridge1)
+                .build();
+        Member inviter = Member.builder()
+                .name("inviter")
+                .id("inviter")
+                .password("encodedPassword")
+                .fridge(fridge2)
+                .build();
+        Alarm alarm = Alarm.builder()
+                .member(invitee2)
+                .inviter(inviter)
+                .text(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
+                .build();
+
+        given(alarmRepository.findById(anyInt())).willReturn(Optional.of(alarm));
+
+        // when
+        int alarmId = 1;
+
+        // then
+        RestApiException exception = assertThrows(RestApiException.class, () ->
+                memberInvitationService.reject(invitee1, alarmId)
+        );
+        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
+        MatcherAssert.assertThat(exception.getErrorCode().name(), is("NOT_OWN_ALARM"));
+    }
+
+    @Test
+    @DisplayName("초대 알람 리스트 가져오기 성공")
+    void getAlarmList_success() {
+        // given
+        Fridge fridge1 = new Fridge(1);
+        Fridge fridge2 = new Fridge(2);
+        Member invitee = Member.builder()
+                .name("invitee")
+                .id("invitee")
+                .password("encodedPassword")
+                .fridge(fridge1)
+                .build();
+        Member inviter = Member.builder()
+                .name("inviter")
+                .id("inviter")
+                .password("encodedPassword")
+                .fridge(fridge2)
+                .build();
+        Alarm alarm = Alarm.builder()
+                .member(invitee)
+                .inviter(inviter)
+                .text(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
+                .build();
+        invitee.setAlarms(Arrays.asList(alarm));
+
+        // when
+        List<AlarmResponseDto> dtoList = memberInvitationService.getAlarmList(invitee);
+
+        // then
+        MatcherAssert.assertThat(dtoList.size(), is(1));
+        MatcherAssert.assertThat(dtoList.get(0).getAlarmId(), is(alarm.getId()));
+        MatcherAssert.assertThat(dtoList.get(0).getContent(), is(alarm.getText()));
+    }
 }
