@@ -17,8 +17,8 @@ public class RecipeRecommandationApiController {
 
     private final RecipeService recipeService;
 
-    @GetMapping("list")
-    public ResponseEntity<List<RecipeInfoResponseDto>> getRecipeInfoList(@RequestParam("ingredientid") int ingredientId) {
+    @GetMapping("list/{ingredient_id}")
+    public ResponseEntity<List<RecipeInfoResponseDto>> getRecipeInfoList(@PathVariable("ingredient_id") int ingredientId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(recipeService.getRecipeInfoList(ingredientId));
     }
