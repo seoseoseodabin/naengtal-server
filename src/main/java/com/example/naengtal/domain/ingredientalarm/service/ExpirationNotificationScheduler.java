@@ -56,7 +56,6 @@ public class ExpirationNotificationScheduler {
 
         sharedMembers.stream()
                 .map(member -> IngredientAlarm.builder()
-                        .createdAt(LocalDateTime.now())
                         .text(message)
                         .member(member)
                         .build())

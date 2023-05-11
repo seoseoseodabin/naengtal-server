@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Table(name = "ingredient_alarm")
+@EntityListeners(AuditingEntityListener.class)
 public class IngredientAlarm {
 
     @Id
@@ -25,6 +28,7 @@ public class IngredientAlarm {
     @Column(name = "text")
     private String text;
 
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
