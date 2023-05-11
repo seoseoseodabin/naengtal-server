@@ -1,5 +1,8 @@
 package com.example.naengtal.domain.member.service;
 
+import com.example.naengtal.domain.alarm.dto.AlarmResponseDto;
+import com.example.naengtal.domain.alarm.dto.FcmInvitationDto;
+import com.example.naengtal.domain.alarm.entity.Alarm;
 import com.example.naengtal.domain.alarm.dao.AlarmRepository;
 import com.example.naengtal.domain.alarm.dto.FcmNotificationDto;
 import com.example.naengtal.domain.alarm.entity.Alarm;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.ALARM_NOT_FOUND;
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.NOT_OWN_ALARM;
@@ -63,13 +67,12 @@ public class MemberInvitationService {
         // 푸시 알림 보내기
         List<String> tokenList = redisTemplate.opsForList().range(inviteeId, 0, -1);
 
-        if (tokenList != null && tokenList.size() != 0) {
+        if (tokenList != null && tokenList.size() != 0)
             fcmService.sendByTokenList(tokenList, FcmNotificationDto.builder()
                     .title("냉장고 공유 초대 요청")
                     .body(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
                     .type(FcmType.INVITATION)
                     .build());
-        }
     }
 
     public void accept(Member invitee, int alarmId) {
@@ -116,7 +119,24 @@ public class MemberInvitationService {
         fridgeRepository.delete(fridge);
     }
 
+
     private List<String> getTokenList(Member member) {
         return redisTemplate.opsForList().range(member.getId(), 0, -1);
+    }
+
+    public void reject(Member invitee, int alarmId) {
+        Alarm alarm = alarmRepository.findById(alarmId)
+                .orElseThrow(() -> new RestApiException(ALARM_NOT_FOUND));
+
+        if (!alarm.getMember().equals(invitee))
+            throw new RestApiException(NOT_OWN_ALARM);
+
+        alarmRepository.delete(alarm);
+    }
+
+    public List<AlarmResponseDto> getAlarmList(Member member) {
+        return member.getAlarms().stream()
+                .map(alarm -> new AlarmResponseDto(alarm.getId(), alarm.getText()))
+                .collect(Collectors.toList());
     }
 }

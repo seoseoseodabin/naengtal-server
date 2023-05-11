@@ -5,6 +5,7 @@ import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.ingredient.dto.IngredientRequestDto;
 import com.example.naengtal.domain.ingredient.dto.IngredientResponseDto;
 import com.example.naengtal.domain.ingredient.entity.Ingredient;
+import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.S3Uploader;
 import com.example.naengtal.global.error.RestApiException;
@@ -27,6 +28,7 @@ public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
     private final S3Uploader s3Uploader;
+    private final IngredientCategoryRepository ingredientCategoryRepository;
 
     public void save(Member member, MultipartFile image, IngredientRequestDto ingredientRequestDto) {
         // 이미지 업로드
@@ -74,5 +76,9 @@ public class IngredientService {
         s3Uploader.deleteFile(ingredient.getImage());
 
         ingredientRepository.delete(ingredient);
+    }
+
+    public List<String> search(String category) {
+        return ingredientCategoryRepository.findByCategoryContainsOrderByCategory(category);
     }
 }

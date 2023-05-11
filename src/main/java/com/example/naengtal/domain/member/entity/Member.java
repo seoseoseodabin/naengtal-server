@@ -34,7 +34,7 @@ public class Member {
     private Fridge fridge;
 
     @OneToMany(mappedBy = "member", orphanRemoval = true)
-    private List<Alarm> alarm = new ArrayList<>();
+    private List<Alarm> alarms = new ArrayList<>();
 
     @OneToMany(mappedBy = "inviter", orphanRemoval = true)
     private List<Alarm> relatedAlarms = new ArrayList<>();
