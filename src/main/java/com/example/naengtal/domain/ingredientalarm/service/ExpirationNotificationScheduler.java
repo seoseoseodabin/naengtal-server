@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 
@@ -36,10 +35,6 @@ public class ExpirationNotificationScheduler {
 
         // 유통기한 임박 (D-5~D-day)
         List<Ingredient> ingredients = ingredientRepository.findByExpirationDateLessThanEqualOrderByExpirationDate(now.plusDays(5));
-        sendAlarms(ingredients);
-    }
-
-    private void sendAlarms(List<Ingredient> ingredients) {
         // db에 저장, fcm 알람 보냄
         ingredients.forEach(ingredient -> {
             saveAlarm(ingredient);

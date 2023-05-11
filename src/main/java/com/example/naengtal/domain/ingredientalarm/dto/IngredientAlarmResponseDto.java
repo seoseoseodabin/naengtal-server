@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class IngredientAlarmResponseDto {
 
-    private int id;
+    private int alarmId;
 
     private String text;
 }
