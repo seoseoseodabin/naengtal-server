@@ -63,7 +63,7 @@ public class MemberInvitationService {
         alarmRepository.save(alarm);
 
         // 푸시 알림 보내기
-        List<String> tokenList = redisTemplate.opsForList().range(inviteeId, 0, -1);
+        List<String> tokenList = getTokenList(invitee);
 
         if (tokenList != null && tokenList.size() != 0)
             fcmService.sendByTokenList(tokenList, FcmNotificationDto.builder()
