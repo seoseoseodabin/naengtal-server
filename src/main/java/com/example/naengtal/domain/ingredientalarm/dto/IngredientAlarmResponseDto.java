@@ -11,5 +11,5 @@ public class IngredientAlarmResponseDto {
 
     private int alarmId;
 
-    private String text;
+    private String content;
 }

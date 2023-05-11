@@ -28,7 +28,7 @@ public class IngredientAlarmService {
         return alarms.stream()
                 .map(alarm -> IngredientAlarmResponseDto.builder()
                         .alarmId(alarm.getId())
-                        .text(alarm.getText())
+                        .content(alarm.getText())
                         .build())
                 .collect(Collectors.toList());
     }

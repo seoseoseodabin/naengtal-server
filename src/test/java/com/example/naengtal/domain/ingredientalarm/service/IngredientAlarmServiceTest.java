@@ -60,7 +60,7 @@ class IngredientAlarmServiceTest {
 
         List<IngredientAlarmResponseDto> alarms = ingredientAlarmService.getAlarm(member);
 
-        assertThat(alarms.get(0).getText()).isEqualTo("~의 유통기한이 만료되었어요.");
+        assertThat(alarms.get(0).getContent()).isEqualTo("~의 유통기한이 만료되었어요.");
     }
 
 
