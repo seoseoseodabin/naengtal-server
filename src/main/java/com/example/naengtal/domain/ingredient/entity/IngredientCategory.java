@@ -16,11 +16,11 @@ public class IngredientCategory {
 
     @Id
     @Column(name = "category_id")
-    int categoryId;
+    private int categoryId;
 
     @Column(name = "recipe_code")
-    int recipeCode;
+    private int recipeCode;
 
     @Column(name = "category")
-    String category;
+    private String category;
 }

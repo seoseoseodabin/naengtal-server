@@ -50,7 +50,7 @@ public class IngredientApiController {
                 .body("success");
     }
 
-    @PostMapping("search")
+    @GetMapping("search")
     public ResponseEntity<List<String>> searchCategory(@RequestParam(name = "category") String category) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ingredientService.search(category));

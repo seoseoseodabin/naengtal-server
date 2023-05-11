@@ -1,5 +1,6 @@
 package com.example.naengtal.domain.member.controller;
 
+import com.example.naengtal.domain.alarm.dto.AlarmResponseDto;
 import com.example.naengtal.domain.member.dto.MemberResponseDto;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.domain.member.service.MemberInvitationService;
@@ -9,10 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -61,5 +59,20 @@ public class FridgeShareApiController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("success");
+    }
+
+    @DeleteMapping("reject/{alarm_id}")
+    public ResponseEntity<String> reject(@Parameter(hidden = true) @LoggedInUser Member invitee,
+                                         @PathVariable("alarm_id") int alarmId) {
+        memberInvitationService.reject(invitee, alarmId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("success");
+    }
+
+    @GetMapping("get/alarms")
+    public ResponseEntity<List<AlarmResponseDto>> getAlarmList(@Parameter(hidden = true) @LoggedInUser Member member) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(memberInvitationService.getAlarmList(member));
     }
 }
