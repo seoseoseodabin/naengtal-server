@@ -20,7 +20,7 @@ public class IngredientAlarm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "alarm_id", nullable = false)
-    private int alarm_id;
+    private int id;
 
     @Column(name = "text")
     private String text;
