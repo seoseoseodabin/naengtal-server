@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class FcmInvitationDto {
+public class FcmNotificationDto {
 
     private String title;
     private String body;
