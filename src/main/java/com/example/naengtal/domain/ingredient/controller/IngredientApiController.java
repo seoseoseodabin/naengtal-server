@@ -7,6 +7,7 @@ import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.annotation.LoggedInUser;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("ingredient/")
+@Slf4j
 public class IngredientApiController {
 
     private final IngredientService ingredientService;
@@ -52,7 +54,9 @@ public class IngredientApiController {
 
     @GetMapping("search")
     public ResponseEntity<List<String>> searchCategory(@RequestParam(name = "category") String category) {
+        List<String> categoryList = ingredientService.search(category);
+        log.debug(categoryList.toString());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ingredientService.search(category));
+                .body(categoryList);
     }
 }

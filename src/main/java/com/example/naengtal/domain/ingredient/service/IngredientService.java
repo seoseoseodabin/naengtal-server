@@ -10,6 +10,7 @@ import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.S3Uploader;
 import com.example.naengtal.global.error.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ import static com.example.naengtal.global.error.CommonErrorCode.INVALID_PARAMETE
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
@@ -79,6 +81,8 @@ public class IngredientService {
     }
 
     public List<String> search(String category) {
-        return ingredientCategoryRepository.findByCategoryContainsOrderByCategory(category);
+        List<String> categoryList = ingredientCategoryRepository.findByCategoryContainsOrderByCategory(category);
+        log.debug(categoryList.toString());
+        return categoryList;
     }
 }
