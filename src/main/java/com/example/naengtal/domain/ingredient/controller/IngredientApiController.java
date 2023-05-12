@@ -54,9 +54,7 @@ public class IngredientApiController {
 
     @GetMapping("search")
     public ResponseEntity<List<String>> searchCategory(@RequestParam(name = "category") String category) {
-        List<String> categoryList = ingredientService.search(category);
-        log.debug(categoryList.toString());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(categoryList);
+                .body(ingredientService.search(category));
     }
 }

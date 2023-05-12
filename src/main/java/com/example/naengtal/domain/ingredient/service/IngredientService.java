@@ -81,8 +81,6 @@ public class IngredientService {
     }
 
     public List<String> search(String category) {
-        List<String> categoryList = ingredientCategoryRepository.findByCategoryContainsOrderByCategory(category);
-        log.debug(categoryList.toString());
-        return categoryList;
+        return ingredientCategoryRepository.findByCategoryContainsOrderByCategory(category);
     }
 }
