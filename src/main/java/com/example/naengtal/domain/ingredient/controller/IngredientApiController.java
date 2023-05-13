@@ -1,5 +1,6 @@
 package com.example.naengtal.domain.ingredient.controller;
 
+import com.example.naengtal.domain.ingredient.dto.IngredientCountResponseDto;
 import com.example.naengtal.domain.ingredient.dto.IngredientRequestDto;
 import com.example.naengtal.domain.ingredient.dto.IngredientResponseDto;
 import com.example.naengtal.domain.ingredient.service.IngredientService;
@@ -36,11 +37,20 @@ public class IngredientApiController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<List<IngredientResponseDto>> getIngredients(@Parameter(hidden = true) @LoggedInUser Member member) {
-        List<IngredientResponseDto> ingredients = ingredientService.getIngredients(member);
+    public ResponseEntity<List<IngredientResponseDto>> getIngredients(@Parameter(hidden = true) @LoggedInUser Member member,
+                                                                      @RequestParam(name = "orderby") String string) {
+        List<IngredientResponseDto> ingredients = ingredientService.getIngredients(member, string);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ingredients);
+    }
+
+    @GetMapping("get/count")
+    public ResponseEntity<IngredientCountResponseDto> getIngredientCount(@Parameter(hidden = true) @LoggedInUser Member member) {
+        IngredientCountResponseDto count = ingredientService.getIngredientCount(member);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(count);
     }
 
     @DeleteMapping("delete")

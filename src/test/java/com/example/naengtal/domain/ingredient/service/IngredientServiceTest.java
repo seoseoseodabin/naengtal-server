@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static com.example.naengtal.domain.ingredient.exception.IngredientErrorCode.INGREDIENT_NOT_FOUND;
 import static com.example.naengtal.global.error.CommonErrorCode.FORBIDDEN;
+import static com.example.naengtal.global.error.CommonErrorCode.INVALID_PARAMETER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -123,8 +124,8 @@ class IngredientServiceTest {
     }
 
     @Test
-    @DisplayName("냉장고 재료 조회 성공")
-    public void get_ingredients_success() {
+    @DisplayName("냉장고 재료 최신순 조회 성공")
+    public void get_ingredients_newest_success() {
         List<Ingredient> ingredients = new ArrayList<>();
         ingredients.add(Ingredient.builder()
                 .image("image")
@@ -135,9 +136,9 @@ class IngredientServiceTest {
                 .ingredientId(1)
                 .build());
 
-        given(ingredientRepository.findByFridge(any(Fridge.class))).willReturn(ingredients);
+        given(ingredientRepository.findByFridgeOrderByIngredientIdDesc(any(Fridge.class))).willReturn(ingredients);
 
-        List<IngredientResponseDto> ingredientResponseDtos = ingredientService.getIngredients(member);
+        List<IngredientResponseDto> ingredientResponseDtos = ingredientService.getIngredients(member, "newest");
 
         assertThat(ingredientResponseDtos.size()).isEqualTo(1);
         assertThat(ingredientResponseDtos.get(0).getId())
@@ -150,5 +151,44 @@ class IngredientServiceTest {
                 .isEqualTo(ingredients.get(0).getImage());
         assertThat(ingredientResponseDtos.get(0).getExpirationDate())
                 .isEqualTo(ingredients.get(0).getExpirationDate());
+    }
+
+    @Test
+    @DisplayName("냉장고 재료 임박순 조회 성공")
+    public void get_ingredients_success() {
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(Ingredient.builder()
+                .image("image")
+                .name("ingredient")
+                .fridge(new Fridge(2))
+                .category("category")
+                .expirationDate(LocalDate.now())
+                .ingredientId(1)
+                .build());
+
+        given(ingredientRepository.findByFridgeOrderByExpirationDate(any(Fridge.class))).willReturn(ingredients);
+
+        List<IngredientResponseDto> ingredientResponseDtos = ingredientService.getIngredients(member, "expiration");
+
+        assertThat(ingredientResponseDtos.size()).isEqualTo(1);
+        assertThat(ingredientResponseDtos.get(0).getId())
+                .isEqualTo(ingredients.get(0).getIngredientId());
+        assertThat(ingredientResponseDtos.get(0).getName())
+                .isEqualTo(ingredients.get(0).getName());
+        assertThat(ingredientResponseDtos.get(0).getCategory())
+                .isEqualTo(ingredients.get(0).getCategory());
+        assertThat(ingredientResponseDtos.get(0).getImage())
+                .isEqualTo(ingredients.get(0).getImage());
+        assertThat(ingredientResponseDtos.get(0).getExpirationDate())
+                .isEqualTo(ingredients.get(0).getExpirationDate());
+    }
+
+    @Test
+    @DisplayName("냉장고 재료 조회 실패")
+    public void get_ingredients_fail() {
+        RestApiException restApiException = assertThrows(RestApiException.class,
+                ()->ingredientService.getIngredients(member, "wrongParameter"));
+
+        assertThat(restApiException.getErrorCode()).isEqualTo(INVALID_PARAMETER);
     }
 }

@@ -22,4 +22,6 @@ public class IngredientResponseDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
     private LocalDate expirationDate;
+
+    private boolean expirationDatePassed;
 }

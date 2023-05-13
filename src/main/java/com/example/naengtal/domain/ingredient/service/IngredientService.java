@@ -1,11 +1,12 @@
 package com.example.naengtal.domain.ingredient.service;
 
 import com.example.naengtal.domain.fridge.entity.Fridge;
+import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
+import com.example.naengtal.domain.ingredient.dto.IngredientCountResponseDto;
 import com.example.naengtal.domain.ingredient.dto.IngredientRequestDto;
 import com.example.naengtal.domain.ingredient.dto.IngredientResponseDto;
 import com.example.naengtal.domain.ingredient.entity.Ingredient;
-import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.S3Uploader;
 import com.example.naengtal.global.error.RestApiException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,19 +52,40 @@ public class IngredientService {
         ingredientRepository.save(ingredient);
     }
 
-    public List<IngredientResponseDto> getIngredients(Member member) {
+    public List<IngredientResponseDto> getIngredients(Member member, String orderBy) {
         Fridge fridge = member.getFridge();
+        LocalDate now = LocalDate.now();
 
-        return ingredientRepository.findByFridge(fridge)
-                .stream()
+        if (orderBy.equals("newest")) {
+            return mapToIngredientResponseDto(ingredientRepository.findByFridgeOrderByIngredientIdDesc(fridge), now);
+        }
+        if (orderBy.equals("expiration")) {
+            return mapToIngredientResponseDto(ingredientRepository.findByFridgeOrderByExpirationDate(fridge), now);
+        }
+        throw new RestApiException(INVALID_PARAMETER);
+    }
+
+    private List<IngredientResponseDto> mapToIngredientResponseDto(List<Ingredient> ingredients, LocalDate now) {
+        return ingredients.stream()
                 .map(ingredient -> IngredientResponseDto.builder()
                         .id(ingredient.getIngredientId())
                         .name(ingredient.getName())
                         .category(ingredient.getCategory())
                         .expirationDate(ingredient.getExpirationDate())
                         .image(ingredient.getImage())
+                        .expirationDatePassed(ingredient.getExpirationDate().isBefore(now))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public IngredientCountResponseDto getIngredientCount(Member member) {
+        Fridge fridge = member.getFridge();
+        LocalDate now = LocalDate.now();
+
+        int expired = ingredientRepository.countByFridgeAndExpirationDateLessThanEqual(fridge, now.minusDays(1));
+        int approaching = ingredientRepository.countByFridgeAndExpirationDateBetween(fridge, now, now.plusDays(5));
+
+        return new IngredientCountResponseDto(approaching, expired);
     }
 
     public void deleteIngredient(Member member, int ingredientId) {
