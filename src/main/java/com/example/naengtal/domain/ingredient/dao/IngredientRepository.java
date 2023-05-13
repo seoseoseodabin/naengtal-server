@@ -12,5 +12,14 @@ import java.util.List;
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
 
     List<Ingredient> findByFridge(Fridge fridge);
+
+    List<Ingredient> findByFridgeOrderByIngredientIdDesc(Fridge fridge);
+
+    List<Ingredient> findByFridgeOrderByExpirationDate(Fridge fridge);
+
+    int countByFridgeAndExpirationDateLessThanEqual(Fridge fridge, LocalDate localDate);
+
+    int countByFridgeAndExpirationDateBetween(Fridge fridge, LocalDate start, LocalDate end);
+
     List<Ingredient> findByExpirationDateLessThanEqualOrderByExpirationDate(LocalDate localDate);
 }
