@@ -13,7 +13,8 @@ public enum CommonErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "forbidden"),
     IMAGE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "image upload fail"),
-    ONLY_IMAGE_ALLOWED(HttpStatus.BAD_REQUEST, "only image are allowed for upload");
+    ONLY_IMAGE_ALLOWED(HttpStatus.BAD_REQUEST, "only image are allowed for upload"),
+    IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "image is too large");
 
     private final HttpStatus httpStatus;
     private final String message;
