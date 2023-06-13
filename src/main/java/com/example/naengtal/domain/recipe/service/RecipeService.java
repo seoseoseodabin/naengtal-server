@@ -3,6 +3,7 @@ package com.example.naengtal.domain.recipe.service;
 import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.ingredient.entity.Ingredient;
+import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.domain.recipe.dao.RecipeInfoRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeIngredientRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeProcessRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.example.naengtal.domain.ingredient.exception.IngredientErrorCode.INGREDIENT_NOT_FOUND;
@@ -60,7 +62,11 @@ public class RecipeService {
                 }).collect(Collectors.toList());
     }
 
-    public SpecificRecipeResponseDto getSpecificRecipe(int recipeCode) {
+    public SpecificRecipeResponseDto getSpecificRecipe(Member member, int recipeCode) {
+        Set<String> myIngredientSet = member.getFridge().getIngredients().stream()
+                .map(Ingredient::getCategory)
+                .collect(Collectors.toSet());
+
         // get info, ingredient, process from repository
         RecipeInfo info = recipeInfoRepository.findById(recipeCode)
                 .orElseThrow(() -> new RestApiException(RECIPE_NOT_FOUND));
@@ -70,7 +76,21 @@ public class RecipeService {
         List<RecipeProcess> processList = recipeProcessRepository.findByRecipeCodeOrderByProcessNumber(recipeCode);
 
         // entity to dto
-        List<RecipeIngredientResponseDto> ingredientDtoList = ingredientList.stream()
+        List<RecipeIngredientResponseDto> mainIngredientDtoList = ingredientList.stream()
+                .filter(ingredient -> ingredient.getIngredientType().equals("주재료"))
+                .map(ingredient -> {
+                    RecipeIngredientResponseDto dto = RecipeIngredientResponseDto.builder()
+                                .name(ingredient.getIngredientName())
+                                .amount(ingredient.getIngredientAmount())
+                                .type(ingredient.getIngredientType())
+                                .build();
+                        if (myIngredientSet.contains(ingredient.getIngredientName()))
+                            dto.setContained(true);
+                        return dto;
+                }).collect(Collectors.toList());
+
+        List<RecipeIngredientResponseDto> additionalIngredientDtoList = ingredientList.stream()
+                .filter(ingredient -> !ingredient.getIngredientType().equals("주재료"))
                 .map(ingredient -> RecipeIngredientResponseDto.builder()
                         .name(ingredient.getIngredientName())
                         .amount(ingredient.getIngredientAmount())
@@ -95,7 +115,8 @@ public class RecipeService {
                 .calories(info.getCalories())
                 .amount(info.getRecipeAmount())
                 .difficulty(info.getDifficulty())
-                .ingredient(ingredientDtoList)
+                .mainIngredient(mainIngredientDtoList)
+                .additionalIngredient(additionalIngredientDtoList)
                 .process(processDtoList)
                 .build();
     }

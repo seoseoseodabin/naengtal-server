@@ -1,12 +1,12 @@
 package com.example.naengtal.domain.recipe.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class RecipeIngredientResponseDto {
 
     private String name;
@@ -14,4 +14,6 @@ public class RecipeIngredientResponseDto {
     private String amount;
 
     private String type;
+
+    private boolean isContained;
 }

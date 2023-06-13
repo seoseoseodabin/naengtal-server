@@ -10,7 +10,6 @@ import com.example.naengtal.domain.member.dao.MemberRepository;
 import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.global.common.service.FcmService;
 import com.example.naengtal.global.error.RestApiException;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,6 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +27,7 @@ import java.util.Optional;
 import static com.example.naengtal.domain.alarm.exception.AlarmErrorCode.ALARM_NOT_FOUND;
 import static com.example.naengtal.domain.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -71,8 +69,7 @@ class MemberInvitationServiceTest {
                 .password("encodedPassword")
                 .fridge(fridge1)
                 .build();
-        List<String> tokenList = new ArrayList<>();
-        tokenList.add("fcmtoken");
+        List<String> tokenList = Arrays.asList("fcmtoken");
 
         given(memberRepository.findById(any(String.class))).willReturn(Optional.of(invitee));
         given(redisTemplate.opsForList()).willReturn(listOperations);
@@ -115,8 +112,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.invite(inviter, inviteeId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("MEMBER_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "MEMBER_NOT_FOUND");
     }
 
     @Test
@@ -139,8 +136,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.invite(inviter, inviteeId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("CANNOT_INVITE_SELF"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "CANNOT_INVITE_SELF");
     }
 
     @Test
@@ -169,8 +166,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.invite(inviter, inviteeId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("ALREADY_SHARING"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "ALREADY_SHARING");
     }
 
     @Test
@@ -202,7 +199,9 @@ class MemberInvitationServiceTest {
                 .inviter(inviter)
                 .text(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
                 .build();
+        List<String> tokenList = Arrays.asList("fcmtoken");
 
+        given(redisTemplate.opsForList()).willReturn(listOperations);
         given(alarmRepository.findById(anyInt())).willReturn(Optional.of(alarm));
 
         // when
@@ -210,8 +209,8 @@ class MemberInvitationServiceTest {
         memberInvitationService.accept(invitee, alarmId);
 
         // then
-        MatcherAssert.assertThat(invitee.getFridge(), is(inviter.getFridge()));
-        MatcherAssert.assertThat(member.getFridge(), is(fridge1));
+        assertEquals(invitee.getFridge(), inviter.getFridge());
+        assertEquals(member.getFridge(), fridge1);
         then(alarmRepository).should(times(1)).delete(any(Alarm.class));
     }
 
@@ -238,7 +237,9 @@ class MemberInvitationServiceTest {
                 .inviter(inviter)
                 .text(inviter.getName() + " 님이 냉장고 초대 요청을 보냈습니다.")
                 .build();
+        List<String> tokenList = Arrays.asList("fcmtoken");
 
+        given(redisTemplate.opsForList()).willReturn(listOperations);
         given(alarmRepository.findById(anyInt())).willReturn(Optional.of(alarm));
 
         // when
@@ -246,7 +247,7 @@ class MemberInvitationServiceTest {
         memberInvitationService.accept(invitee, alarmId);
 
         // then
-        MatcherAssert.assertThat(invitee.getFridge(), is(inviter.getFridge()));
+        assertEquals(invitee.getFridge(), inviter.getFridge());
         then(alarmRepository).should(times(1)).delete(any(Alarm.class));
     }
 
@@ -270,8 +271,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.accept(invitee, alarmId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("ALARM_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "ALARM_NOT_FOUND");
     }
 
     @Test
@@ -313,8 +314,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.accept(invitee1, alarmId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("NOT_OWN_ALARM"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "NOT_OWN_ALARM");
     }
 
     @Test
@@ -327,6 +328,9 @@ class MemberInvitationServiceTest {
                 .password("encodedPassword")
                 .fridge(fridge)
                 .build();
+        List<String> tokenList = Arrays.asList("fcmtoken");
+
+        given(redisTemplate.opsForList()).willReturn(listOperations);
 
         memberInvitationService.leaveFridge(member);
 
@@ -349,6 +353,9 @@ class MemberInvitationServiceTest {
                 .password("encodedPassword")
                 .fridge(fridge)
                 .build();
+        List<String> tokenList = Arrays.asList("fcmtoken");
+
+        given(redisTemplate.opsForList()).willReturn(listOperations);
 
         memberInvitationService.leaveFridge(member1);
 
@@ -410,8 +417,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.reject(invitee, alarmId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("ALARM_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "ALARM_NOT_FOUND");
     }
 
     @Test
@@ -453,8 +460,8 @@ class MemberInvitationServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 memberInvitationService.reject(invitee1, alarmId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("NOT_OWN_ALARM"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "NOT_OWN_ALARM");
     }
 
     @Test
@@ -486,8 +493,8 @@ class MemberInvitationServiceTest {
         List<AlarmResponseDto> dtoList = memberInvitationService.getAlarmList(invitee);
 
         // then
-        MatcherAssert.assertThat(dtoList.size(), is(1));
-        MatcherAssert.assertThat(dtoList.get(0).getAlarmId(), is(alarm.getId()));
-        MatcherAssert.assertThat(dtoList.get(0).getContent(), is(alarm.getText()));
+        assertEquals(dtoList.size(), 1);
+        assertEquals(dtoList.get(0).getAlarmId(), alarm.getId());
+        assertEquals(dtoList.get(0).getContent(), alarm.getText());
     }
 }

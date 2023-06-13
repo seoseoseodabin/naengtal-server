@@ -1,8 +1,10 @@
 package com.example.naengtal.domain.recipe.service;
 
+import com.example.naengtal.domain.fridge.entity.Fridge;
 import com.example.naengtal.domain.ingredient.dao.IngredientCategoryRepository;
 import com.example.naengtal.domain.ingredient.dao.IngredientRepository;
 import com.example.naengtal.domain.ingredient.entity.Ingredient;
+import com.example.naengtal.domain.member.entity.Member;
 import com.example.naengtal.domain.recipe.dao.RecipeInfoRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeIngredientRepository;
 import com.example.naengtal.domain.recipe.dao.RecipeProcessRepository;
@@ -12,7 +14,6 @@ import com.example.naengtal.domain.recipe.entity.RecipeInfo;
 import com.example.naengtal.domain.recipe.entity.RecipeIngredient;
 import com.example.naengtal.domain.recipe.entity.RecipeProcess;
 import com.example.naengtal.global.error.RestApiException;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,13 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.naengtal.domain.ingredient.exception.IngredientErrorCode.INGREDIENT_NOT_FOUND;
 import static com.example.naengtal.domain.recipe.exception.RecipeErrorCode.RECIPE_NOT_FOUND;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -55,6 +56,10 @@ class RecipeServiceTest {
     @Mock
     private IngredientCategoryRepository ingredientCategoryRepository;
 
+    private static Fridge fridge;
+
+    private static Member member;
+
     private static RecipeInfo info;
 
     private static List<RecipeIngredient> ingredientList;
@@ -63,11 +68,21 @@ class RecipeServiceTest {
 
     @BeforeAll
     static void before() {
+        fridge = new Fridge(1);
+        fridge.setIngredients(Arrays.asList(new Ingredient(1, "동원참치", "참치통조림", LocalDate.now(), "imagelink", fridge)));
+
+        member = Member.builder()
+                .id("test")
+                .password("test1234")
+                .fridge(fridge)
+                .build();
+
         info = new RecipeInfo(1, "참치김치찌개", "간단하고 맛있는 참치김치찌개", "한식",
                 "찌개", "20분", "0Kcal", "2인분", "초보환영", "imagelink");
 
-        ingredientList = Arrays.asList(new RecipeIngredient(1, 1, 1, "참치", "1캔", "주재료"),
-                new RecipeIngredient(2, 1, 2, "김치", "두 주먹", "주재료"));
+        ingredientList = Arrays.asList(new RecipeIngredient(1, 1, 1, "참치통조림", "1캔", "주재료"),
+                new RecipeIngredient(2, 1, 2, "김치", "두 주먹", "주재료"),
+                new RecipeIngredient(3, 1, 3, "소금", "약간", "부재료"));
 
         processList = Arrays.asList(new RecipeProcess(1, 1, 1, "김치를 적당히 썰어서 냄비에 넣고 볶는다", "imagelink", null),
                 new RecipeProcess(2, 1, 2, "참치와 물과 소금을 넣고 팔팔 끓인다", "imagelink", "국물이 안 빨갛다면 김치국물 넣기"));
@@ -93,9 +108,9 @@ class RecipeServiceTest {
         List<RecipeInfoResponseDto> infoList = recipeService.getRecipeInfoList(ingredientId);
 
         // then
-        MatcherAssert.assertThat(infoList.size(), is(1));
-        MatcherAssert.assertThat(infoList.get(0).getRecipeCode(), is(info.getRecipeCode()));
-        MatcherAssert.assertThat(infoList.get(0).getRecipeName(), is(info.getRecipeName()));
+        assertEquals(infoList.size(), 1);
+        assertEquals(infoList.get(0).getRecipeCode(), info.getRecipeCode());
+        assertEquals(infoList.get(0).getRecipeName(), info.getRecipeName());
     }
 
     @Test
@@ -111,8 +126,8 @@ class RecipeServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 recipeService.getRecipeInfoList(ingredientId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("INGREDIENT_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "INGREDIENT_NOT_FOUND");
     }
 
     @Test
@@ -137,8 +152,8 @@ class RecipeServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 recipeService.getRecipeInfoList(ingredientId)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("RECIPE_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "RECIPE_NOT_FOUND");
     }
 
     @Test
@@ -151,19 +166,24 @@ class RecipeServiceTest {
 
         // when
         int recipeCode = 1;
-        SpecificRecipeResponseDto dto = recipeService.getSpecificRecipe(recipeCode);
+        SpecificRecipeResponseDto dto = recipeService.getSpecificRecipe(member, recipeCode);
 
         // then
-        MatcherAssert.assertThat(dto.getName(), is(info.getRecipeName()));
-        MatcherAssert.assertThat(dto.getSummary(), is(info.getSummary()));
+        assertEquals(dto.getName(), info.getRecipeName());
+        assertEquals(dto.getSummary(), info.getSummary());
 
-        MatcherAssert.assertThat(dto.getIngredient().size(), is(2));
-        MatcherAssert.assertThat(dto.getIngredient().get(0).getName(), is(ingredientList.get(0).getIngredientName()));
-        MatcherAssert.assertThat(dto.getIngredient().get(1).getName(), is(ingredientList.get(1).getIngredientName()));
+        assertEquals(dto.getMainIngredient().size(), 2);
+        assertEquals(dto.getMainIngredient().get(0).getName(), ingredientList.get(0).getIngredientName());
+        assertEquals(dto.getMainIngredient().get(1).getName(), ingredientList.get(1).getIngredientName());
+        assertTrue(dto.getMainIngredient().get(0).isContained());
+        assertFalse(dto.getMainIngredient().get(1).isContained());
 
-        MatcherAssert.assertThat(dto.getProcess().size(), is(2));
-        MatcherAssert.assertThat(dto.getProcess().get(0).getDescription(), is(processList.get(0).getDescription()));
-        MatcherAssert.assertThat(dto.getProcess().get(1).getDescription(), is(processList.get(1).getDescription()));
+        assertEquals(dto.getAdditionalIngredient().size(), 1);
+        assertEquals(dto.getAdditionalIngredient().get(0).getName(), ingredientList.get(2).getIngredientName());
+
+        assertEquals(dto.getProcess().size(), 2);
+        assertEquals(dto.getProcess().get(0).getDescription(), processList.get(0).getDescription());
+        assertEquals(dto.getProcess().get(1).getDescription(), processList.get(1).getDescription());
     }
 
     @Test
@@ -177,9 +197,9 @@ class RecipeServiceTest {
 
         // then
         RestApiException exception = assertThrows(RestApiException.class, () ->
-                recipeService.getSpecificRecipe(recipeCode)
+                recipeService.getSpecificRecipe(member, recipeCode)
         );
-        MatcherAssert.assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.NOT_FOUND));
-        MatcherAssert.assertThat(exception.getErrorCode().name(), is("RECIPE_NOT_FOUND"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(exception.getErrorCode().name(), "RECIPE_NOT_FOUND");
     }
 }
