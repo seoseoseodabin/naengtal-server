@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -60,10 +61,10 @@ class MemberSearchServiceTest {
         List<MemberResponseDto> searchedList = memberSearchService.search(inviter, nameOrId);
 
         // then
-        MatcherAssert.assertThat(searchedList.size(), is(2));
-        MatcherAssert.assertThat(searchedList.get(0).getId(), is(member1.getId()));
-        MatcherAssert.assertThat(searchedList.get(0).isSharing(), is(true));
-        MatcherAssert.assertThat(searchedList.get(1).getId(), is(member2.getId()));
-        MatcherAssert.assertThat(searchedList.get(1).isSharing(), is(false));
+        assertEquals(searchedList.size(), 2);
+        assertEquals(searchedList.get(0).getId(), member1.getId());
+        assertTrue(searchedList.get(0).isSharing());
+        assertEquals(searchedList.get(1).getId(), member2.getId());
+        assertFalse(searchedList.get(1).isSharing());
     }
 }

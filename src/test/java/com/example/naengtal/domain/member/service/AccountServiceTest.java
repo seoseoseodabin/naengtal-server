@@ -19,8 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -67,8 +66,8 @@ class AccountServiceTest {
         MemberInfo memberInfo = accountService.saveMember(signUpRequestDto);
 
         // then
-        assertThat(memberInfo.getId(), is(member.getId()));
-        assertThat(memberInfo.getName(), is(member.getName()));
+        assertEquals(memberInfo.getId(), member.getId());
+        assertEquals(memberInfo.getName(), member.getName());
         then(passwordEncoder).should(times(1)).encode(any());
     }
 
@@ -97,8 +96,8 @@ class AccountServiceTest {
         RestApiException exception = assertThrows(RestApiException.class, () ->
                 accountService.saveMember(signUpRequestDto)
         );
-        assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(exception.getErrorCode().name(), is("UNAVAILABLE_ID"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "UNAVAILABLE_ID");
     }
 
     @Test
@@ -118,8 +117,8 @@ class AccountServiceTest {
         );
 
         // then
-        assertThat(exception.getErrorCode().getHttpStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(exception.getErrorCode().name(), is("WRONG_CONFIRM_PASSWORD"));
+        assertEquals(exception.getErrorCode().getHttpStatus(), HttpStatus.BAD_REQUEST);
+        assertEquals(exception.getErrorCode().name(), "WRONG_CONFIRM_PASSWORD");
     }
 
     @Test
