@@ -27,7 +27,9 @@ public class SpecificRecipeResponseDto {
 
     private String difficulty;
 
-    private List<RecipeIngredientResponseDto> ingredient;
+    private List<RecipeIngredientResponseDto> mainIngredient;
+
+    private List<RecipeIngredientResponseDto> additionalIngredient;
 
     private List<RecipeProcessResponseDto> process;
 }
